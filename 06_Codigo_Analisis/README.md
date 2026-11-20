@@ -18,6 +18,7 @@ Pipeline reproducible para el análisis de datos del proyecto de reconocimiento
 - `PLAN_ACCION_CORPUS_DERIVADO.md`: plan y estado de ejecución.
 - `docs/`: datos, protocolo, metodología, reproducibilidad y App.
 - `reports/figuras/`: figuras del pipeline y rejilla de las 12 condiciones.
+- `reports/estadistica/REPORTE_DATOS.md`: análisis detallado del corpus.
 
 ## Requisitos
 

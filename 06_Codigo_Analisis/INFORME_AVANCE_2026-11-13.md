@@ -578,6 +578,9 @@ Pruebas incluidas:
 `reports/figuras/condiciones_12.png` muestra las 12 condiciones de una misma
 página para inspección cualitativa.
 
+El análisis detallado de datos (composición, balance, calidad, área de caja y
+cobertura por fold) está en `reports/estadistica/REPORTE_DATOS.md`.
+
 ---
 
 ## 9. Estructura entregada

@@ -6,9 +6,16 @@ import yaml
 from src.config import resolve_from_project
 
 
-def train(config_path):
+def train(config_path, data=None, epochs=None, name=None):
     with open(config_path, "r", encoding="utf-8") as handle:
         config = yaml.safe_load(handle) or {}
+
+    if data:
+        config["data"] = data
+    if epochs is not None:
+        config["epochs"] = epochs
+    if name:
+        config["name"] = name
 
     from ultralytics import YOLO
 
@@ -31,8 +38,11 @@ def train(config_path):
 def main():
     parser = argparse.ArgumentParser(description="Entrena un modelo YOLO")
     parser.add_argument("--config", required=True, help="Ruta a configs/*.yaml")
+    parser.add_argument("--data", default=None, help="Sobrescribe el data.yaml")
+    parser.add_argument("--epochs", type=int, default=None)
+    parser.add_argument("--name", default=None)
     args = parser.parse_args()
-    train(args.config)
+    train(args.config, data=args.data, epochs=args.epochs, name=args.name)
 
 
 if __name__ == "__main__":
