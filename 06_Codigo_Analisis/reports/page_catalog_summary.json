@@ -1,0 +1,21 @@
+{
+  "seed": 42,
+  "n_pages": 40,
+  "n_controlled": 35,
+  "n_spontaneous": 5,
+  "counts_by_subset": {
+    "books": 20,
+    "uploaded": 5,
+    "dsbi_recto": 10,
+    "handwritten": 5
+  },
+  "coverage": 63,
+  "missing_classes": [],
+  "folds": {
+    "0": 7,
+    "1": 7,
+    "2": 7,
+    "3": 7,
+    "4": 7
+  }
+}

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Respaldos históricos
+04_Respaldos_Historicos/
+
+# Datos y salidas del análisis
+06_Codigo_Analisis/data/raw/angelina/*
+06_Codigo_Analisis/data/raw/dsbi/*
+06_Codigo_Analisis/data/interim/
+06_Codigo_Analisis/data/processed/
+06_Codigo_Analisis/outputs/
+06_Codigo_Analisis/data/splits/page_catalog.csv
+06_Codigo_Analisis/data/splits/derived_folds.csv
+06_Codigo_Analisis/data/splits/fold_*/
+
+# Modelos y artefactos
+*.pt
+*.onnx
+*.tflite

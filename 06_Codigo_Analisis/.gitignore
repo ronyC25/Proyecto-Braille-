@@ -17,7 +17,6 @@ data/splits/fold_*/
 
 # Salidas
 outputs/
-reports/*.json
 *.pt
 *.onnx
 *.tflite
