@@ -19,6 +19,7 @@ Pipeline reproducible para el análisis de datos del proyecto de reconocimiento
 - `docs/`: datos, protocolo, metodología, reproducibilidad y App.
 - `reports/figuras/`: figuras del pipeline y rejilla de las 12 condiciones.
 - `reports/estadistica/REPORTE_DATOS.md`: análisis detallado del corpus.
+- `reports/estadistica/REPORTE_DATOS.docx`: versión Word del análisis.
 
 ## Requisitos
 

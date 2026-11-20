@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: audit catalog derived validate yolo folds grid test all
+.PHONY: audit catalog derived validate yolo folds grid docx test all
 
 audit:
 	$(PYTHON) scripts/10_audit_sources.py
@@ -23,7 +23,10 @@ folds:
 grid:
 	$(PYTHON) scripts/16_make_condition_grid.py
 
+docx:
+	$(PYTHON) scripts/23_make_docx_report.py
+
 test:
 	$(PYTHON) -m pytest -q
 
-all: audit catalog derived validate yolo folds grid test
+all: audit catalog derived validate yolo folds grid docx test

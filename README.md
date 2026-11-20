@@ -119,6 +119,7 @@ python -m src.evaluation.evaluate --weights outputs/runs/yolov8n_fp32/weights/be
 ## Documentación adicional
 
 - [`06_Codigo_Analisis/reports/estadistica/REPORTE_DATOS.md`](06_Codigo_Analisis/reports/estadistica/REPORTE_DATOS.md)
+- [`06_Codigo_Analisis/reports/estadistica/REPORTE_DATOS.docx`](06_Codigo_Analisis/reports/estadistica/REPORTE_DATOS.docx)
 - [`06_Codigo_Analisis/docs/METODOLOGIA.md`](06_Codigo_Analisis/docs/METODOLOGIA.md)
 - [`06_Codigo_Analisis/docs/REPRODUCIBILIDAD.md`](06_Codigo_Analisis/docs/REPRODUCIBILIDAD.md)
 - [`06_Codigo_Analisis/docs/APP.md`](06_Codigo_Analisis/docs/APP.md)

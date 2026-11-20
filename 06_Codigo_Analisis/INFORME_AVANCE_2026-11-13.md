@@ -579,7 +579,8 @@ Pruebas incluidas:
 página para inspección cualitativa.
 
 El análisis detallado de datos (composición, balance, calidad, área de caja y
-cobertura por fold) está en `reports/estadistica/REPORTE_DATOS.md`.
+cobertura por fold) está en `reports/estadistica/REPORTE_DATOS.md` y en su
+versión Word `reports/estadistica/REPORTE_DATOS.docx`.
 
 ---
 
