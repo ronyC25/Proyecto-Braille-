@@ -1,4 +1,4 @@
-class_id,int_label,dots,count,count_angelina,count_dsbi,count_books,count_uploaded,count_handwritten,count_recto,pct,pct_acumulado
+identificador_clase,etiqueta_braille,puntos,frecuencia,frecuencia_angelina,frecuencia_dsbi,frecuencia_libros,frecuencia_subidas,frecuencia_manuscritas,frecuencia_recto,porcentaje,porcentaje_acumulado
 0,1,1,8724,7884,840,5340,1656,888,840,6.167811996267074,6.167811996267074
 1,2,2,2556,1956,600,1608,264,84,600,1.807075591753627,7.9748875880207
 2,3,12,2952,1560,1392,1032,384,144,1392,2.0870450496309494,10.06193263765165

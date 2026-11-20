@@ -13,11 +13,11 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 | clases | 63 |
 | cajas_por_pagina_media | 294.675 |
 | cajas_por_pagina_mediana | 276 |
-| cajas_por_pagina_sd | 141.890 |
+| cajas_por_pagina_desviacion | 141.890 |
 | cajas_por_pagina_min | 32 |
 | cajas_por_pagina_max | 598 |
 | cajas_por_imagen_media | 294.675 |
-| cajas_por_imagen_sd | 140.251 |
+| cajas_por_imagen_desviacion | 140.251 |
 | area_caja_media_px2 | 370.249 |
 | area_caja_mediana_px2 | 379.200 |
 | brillo_medio | 165.618 |
@@ -28,24 +28,24 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 
 ## 2. Composición por fuente y subconjunto
 
-| source | paginas | imagenes | cajas | clases | cajas_por_pagina |
+| fuente | paginas | imagenes | cajas | clases | cajas_por_pagina |
 | --- | --- | --- | --- | --- | --- |
 | angelina | 30 | 360 | 89208 | 58 | 247.800 |
 | dsbi | 10 | 120 | 52236 | 63 | 435.300 |
 
 
-| subset | paginas | imagenes | cajas | clases | cajas_por_pagina |
+| subconjunto | paginas | imagenes | cajas | clases | cajas_por_pagina |
 | --- | --- | --- | --- | --- | --- |
-| books | 20 | 240 | 60840 | 46 | 253.500 |
-| handwritten | 5 | 60 | 8100 | 48 | 135 |
+| libros | 20 | 240 | 60840 | 46 | 253.500 |
+| manuscritas | 5 | 60 | 8100 | 48 | 135 |
 | recto | 10 | 120 | 52236 | 63 | 435.300 |
-| uploaded | 5 | 60 | 20268 | 54 | 337.800 |
+| subidas | 5 | 60 | 20268 | 54 | 337.800 |
 
 ![Distribución por fuente](../figuras/datos_distribucion_fuente.png)
 
 ## 3. Distribución de clases
 
-| class_id | int_label | dots | count | pct | count_angelina | count_dsbi |
+| identificador_clase | etiqueta_braille | puntos | frecuencia | porcentaje | frecuencia_angelina | frecuencia_dsbi |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0 | 1 | 1 | 8724 | 6.168 | 7884 | 840 |
 | 1 | 2 | 2 | 2556 | 1.807 | 1956 | 600 |
@@ -68,9 +68,9 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 | 18 | 19 | 125 | 3156 | 2.231 | 588 | 2568 |
 | 19 | 20 | 35 | 588 | 0.416 | 12 | 576 |
 
-**Top 15 clases por cantidad de cajas:**
+**15 clases más frecuentes:**
 
-| int_label | dots | count | pct | count_angelina | count_dsbi |
+| etiqueta_braille | puntos | frecuencia | porcentaje | frecuencia_angelina | frecuencia_dsbi |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 1 | 8724 | 6.168 | 7884 | 840 |
 | 21 | 135 | 8460 | 5.981 | 7764 | 696 |
@@ -94,9 +94,9 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 | --- | --- |
 | clases_presentes | 63 |
 | clases_ausentes | 0 |
-| min | 96 |
-| max | 8724 |
-| ratio_max_min | 90.875 |
+| minimo | 96 |
+| maximo | 8724 |
+| razon_maximo_minimo | 90.875 |
 | coeficiente_variacion | 0.947 |
 | entropia_normalizada | 0.903 |
 | gini_impureza | 0.970 |
@@ -105,12 +105,34 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 | clases_menos_100 | 1 |
 | mediana | 1536 |
 
+**15 clases menos frecuentes:**
+
+| etiqueta_braille | puntos | frecuencia | porcentaje | frecuencia_angelina | frecuencia_dsbi |
+| --- | --- | --- | --- | --- | --- |
+| 40 | 46 | 96 | 0.068 | 84 | 12 |
+| 61 | 13456 | 108 | 0.076 | 24 | 84 |
+| 32 | 6 | 204 | 0.144 | 48 | 156 |
+| 57 | 1456 | 264 | 0.187 | 0 | 264 |
+| 35 | 126 | 288 | 0.204 | 24 | 264 |
+| 63 | 123456 | 372 | 0.263 | 264 | 108 |
+| 56 | 456 | 384 | 0.271 | 36 | 348 |
+| 54 | 2356 | 396 | 0.280 | 240 | 156 |
+| 48 | 56 | 408 | 0.288 | 12 | 396 |
+| 59 | 12456 | 432 | 0.305 | 24 | 408 |
+| 44 | 346 | 456 | 0.322 | 0 | 456 |
+| 8 | 4 | 456 | 0.322 | 12 | 444 |
+| 24 | 45 | 516 | 0.365 | 360 | 156 |
+| 55 | 12356 | 540 | 0.382 | 36 | 504 |
+| 42 | 246 | 552 | 0.390 | 84 | 468 |
+
+![Desbalance de clases](../figuras/datos_desbalance.png)
+
 ## 5. Cajas por página y por condición
 
 
 ![Cajas por página](../figuras/datos_cajas_pagina.png)
 
-| condition_id | n_images | n_boxes | brightness_mean | brightness_sd | contrast_mean | contrast_sd | sharpness_mean | sharpness_sd | box_area_mean | box_area_sd |
+| condicion | imagenes | cajas | brillo_medio | brillo_desviacion | contraste_medio | contraste_desviacion | nitidez_media | nitidez_desviacion | area_caja_media | area_caja_desviacion |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | L30_O0_Sflat | 40 | 11787 | 164.499 | 13.369 | 46.101 | 10.476 | 135.883 | 50.982 | 378.813 | 206.258 |
 | L30_O0_Swrinkle | 40 | 11787 | 158.229 | 12.912 | 44.587 | 10.061 | 65.054 | 24.035 | 402.012 | 217.690 |
@@ -136,30 +158,30 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 
 | prueba | n | estadistico | p_valor |
 | --- | --- | --- | --- |
-| brightness_friedman_lighting | 160 | 314.113 | 6.185e-69 |
-| brightness_wilcoxon_orientation | 240 | 0 | 4.015e-41 |
-| brightness_wilcoxon_support | 240 | 0 | 4.015e-41 |
-| contrast_friedman_lighting | 160 | 78.463 | 9.164e-18 |
-| contrast_wilcoxon_orientation | 240 | 77 | 1.052e-40 |
-| contrast_wilcoxon_support | 240 | 1 | 4.066e-41 |
-| sharpness_friedman_lighting | 160 | 260 | 3.481e-57 |
-| sharpness_wilcoxon_orientation | 240 | 1862 | 1.261e-31 |
-| sharpness_wilcoxon_support | 240 | 0 | 4.015e-41 |
-| box_area_mean_friedman_lighting | 160 | 1.225 | 5.420e-01 |
-| box_area_mean_wilcoxon_orientation | 240 | 0 | 4.009e-41 |
-| box_area_mean_wilcoxon_support | 240 | 0 | 4.015e-41 |
+| brillo_friedman_iluminacion | 160 | 314.113 | 6.185e-69 |
+| brillo_wilcoxon_orientacion | 240 | 0 | 4.015e-41 |
+| brillo_wilcoxon_soporte | 240 | 0 | 4.015e-41 |
+| contraste_friedman_iluminacion | 160 | 78.463 | 9.164e-18 |
+| contraste_wilcoxon_orientacion | 240 | 77 | 1.052e-40 |
+| contraste_wilcoxon_soporte | 240 | 1 | 4.066e-41 |
+| nitidez_friedman_iluminacion | 160 | 260 | 3.481e-57 |
+| nitidez_wilcoxon_orientacion | 240 | 1862 | 1.261e-31 |
+| nitidez_wilcoxon_soporte | 240 | 0 | 4.015e-41 |
+| area_caja_media_friedman_iluminacion | 160 | 1.225 | 5.420e-01 |
+| area_caja_media_wilcoxon_orientacion | 240 | 0 | 4.009e-41 |
+| area_caja_media_wilcoxon_soporte | 240 | 0 | 4.015e-41 |
 
 **Otras métricas:**
 
 | metrica | valor |
 | --- | --- |
-| jensen_shannon_angelina_dsbi | 0.602 |
-| cajas_por_pagina_bootstrap_ci95 | [251.849375, 338.251875] |
+| divergencia_jensen_shannon_angelina_dsbi | 0.602 |
+| cajas_por_pagina_intervalo_confianza_95 | [251.849375, 338.251875] |
 | clases_presentes | 63 |
 | clases_ausentes | 0 |
-| min | 96 |
-| max | 8724 |
-| ratio_max_min | 90.875 |
+| minimo | 96 |
+| maximo | 8724 |
+| razon_maximo_minimo | 90.875 |
 | coeficiente_variacion | 0.947 |
 | entropia_normalizada | 0.903 |
 | gini_impureza | 0.970 |
@@ -168,32 +190,32 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 | clases_menos_100 | 1 |
 | mediana | 1536 |
 
-## 8. Cobertura por fold
+## 8. Cobertura por pliegue
 
-| experiment_fold | split | pages | images | boxes | classes | coverage | missing_classes |
+| pliegue | particion | paginas | imagenes | cajas | clases | cobertura | clases_faltantes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | train | 24 | 288 | 94656 | 63 | 100 |  |
-| 0 | val | 4 | 48 | 11340 | 38 | 60.317 | 3,5,7,10,11,15,17,19,23,27,31,32,33,34,38,40,43,47,53,54,55,56,58,60,62 |
-| 0 | test | 7 | 84 | 27348 | 62 | 98.413 | 31 |
-| 0 | external | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
-| 1 | train | 24 | 288 | 98604 | 63 | 100 |  |
-| 1 | val | 4 | 48 | 9324 | 40 | 63.492 | 3,5,7,10,11,15,19,23,31,33,38,39,40,41,43,44,47,53,55,56,58,60,62 |
-| 1 | test | 7 | 84 | 25416 | 60 | 95.238 | 7,23,34 |
-| 1 | external | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
-| 2 | train | 24 | 288 | 94056 | 63 | 100 |  |
-| 2 | val | 4 | 48 | 15084 | 39 | 61.905 | 3,5,7,10,11,15,19,23,27,31,32,34,38,40,41,43,47,53,54,55,56,58,60,62 |
-| 2 | test | 7 | 84 | 24204 | 61 | 96.825 | 39,60 |
-| 2 | external | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
-| 3 | train | 24 | 288 | 92556 | 63 | 100 |  |
-| 3 | val | 4 | 48 | 13020 | 40 | 63.492 | 3,5,7,11,15,19,23,27,31,34,37,38,40,43,44,47,53,54,55,56,58,60,62 |
-| 3 | test | 7 | 84 | 27768 | 57 | 90.476 | 19,23,41,43,56,58 |
-| 3 | external | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
-| 4 | train | 24 | 288 | 90552 | 63 | 100 |  |
-| 4 | val | 4 | 48 | 14184 | 49 | 77.778 | 5,7,11,15,19,31,33,40,43,47,53,56,58,60 |
-| 4 | test | 7 | 84 | 28608 | 62 | 98.413 | 55 |
-| 4 | external | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
+| 0 | entrenamiento | 24 | 288 | 94656 | 63 | 100 |  |
+| 0 | validacion | 4 | 48 | 11340 | 38 | 60.317 | 3,5,7,10,11,15,17,19,23,27,31,32,33,34,38,40,43,47,53,54,55,56,58,60,62 |
+| 0 | prueba | 7 | 84 | 27348 | 62 | 98.413 | 31 |
+| 0 | externo | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
+| 1 | entrenamiento | 24 | 288 | 98604 | 63 | 100 |  |
+| 1 | validacion | 4 | 48 | 9324 | 40 | 63.492 | 3,5,7,10,11,15,19,23,31,33,38,39,40,41,43,44,47,53,55,56,58,60,62 |
+| 1 | prueba | 7 | 84 | 25416 | 60 | 95.238 | 7,23,34 |
+| 1 | externo | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
+| 2 | entrenamiento | 24 | 288 | 94056 | 63 | 100 |  |
+| 2 | validacion | 4 | 48 | 15084 | 39 | 61.905 | 3,5,7,10,11,15,19,23,27,31,32,34,38,40,41,43,47,53,54,55,56,58,60,62 |
+| 2 | prueba | 7 | 84 | 24204 | 61 | 96.825 | 39,60 |
+| 2 | externo | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
+| 3 | entrenamiento | 24 | 288 | 92556 | 63 | 100 |  |
+| 3 | validacion | 4 | 48 | 13020 | 40 | 63.492 | 3,5,7,11,15,19,23,27,31,34,37,38,40,43,44,47,53,54,55,56,58,60,62 |
+| 3 | prueba | 7 | 84 | 27768 | 57 | 90.476 | 19,23,41,43,56,58 |
+| 3 | externo | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
+| 4 | entrenamiento | 24 | 288 | 90552 | 63 | 100 |  |
+| 4 | validacion | 4 | 48 | 14184 | 49 | 77.778 | 5,7,11,15,19,31,33,40,43,47,53,56,58,60 |
+| 4 | prueba | 7 | 84 | 28608 | 62 | 98.413 | 55 |
+| 4 | externo | 5 | 60 | 8100 | 48 | 76.190 | 5,7,11,15,33,34,38,39,40,41,43,47,54,56,58 |
 
-![Cobertura por fold](../figuras/datos_cobertura_folds.png)
+![Cobertura por pliegue](../figuras/datos_cobertura_folds.png)
 
 ## 9. Integridad y duplicados
 
@@ -205,16 +227,52 @@ Este reporte describe el corpus derivado de 40 páginas × 12 condiciones. No in
 
 - El corpus está balanceado por página y condición: 40 imágenes por condición y 12 imágenes por página.
 - La distribución de clases es desigual: la clase más frecuente tiene 8724 cajas y la menos frecuente 96.
-- DSBI aporta clases raras que Angelina no contiene; esto justifica la combinación de fuentes.
-- Las condiciones modifican significativamente brillo, contraste y nitidez, como se esperaba.
-- La cobertura de entrenamiento es 63/63 en todos los folds; val/test/external no cubren todas las clases, lo cual es esperado por el tamaño de esos splits.
 - DSBI aporta 63/63 clases y Angelina 58/63; la combinación cubre el espacio completo.
-- El desbalance es alto (ratio máximo/mínimo ≈ 90.9), por lo que se recomienda augmentation y class weights.
-- La orientación y el soporte modifican el área de caja; la iluminación no (p≈0.542). Esto justifica evaluar robustez por orientación y soporte.
+- La orientación y el soporte modifican el área de caja; la iluminación no (p≈0.542).
+- La cobertura de entrenamiento es 63/63 en todos los pliegues; validación, prueba y externo no cubren todas las clases, algo esperado por su tamaño.
+- El desbalance es alto (razón máximo/mínimo ≈ 90.9), por lo que se recomienda aumento de datos y pesos por clase.
 
-## 11. Anexo: tabla completa de clases
+## 11. Glosario de términos
 
-| class_id | int_label | dots | count | pct | count_angelina | count_dsbi | count_books | count_uploaded | count_handwritten | count_recto |
+| Término | Definición |
+| --- | --- |
+| OBR | Reconocimiento óptico de Braille: conversión de una imagen de texto en relieve a texto digital. |
+| CNN | Red neuronal convolucional: modelo de aprendizaje profundo especializado en imágenes. |
+| Braille Grado 1 | Escritura táctil en la que cada carácter se representa por una celda de seis puntos, sin contracciones. |
+| Celda Braille | Unidad de 2 columnas por 3 filas que representa un carácter o signo. |
+| Punto Braille | Cada uno de los seis relieves posibles dentro de una celda, numerados del 1 al 6. |
+| Etiqueta Braille | Número entero de 1 a 63 que codifica los puntos presentes en una celda. |
+| Caja delimitadora | Rectángulo que encierra una celda Braille en la imagen. |
+| Anotación | Archivo que indica las cajas y la clase de cada celda de una imagen. |
+| Corpus derivado | Conjunto de 40 páginas × 12 condiciones generado a partir de Angelina y DSBI. |
+| Pliegue | Cada una de las particiones de la validación cruzada. |
+| Partición | Conjunto de entrenamiento, validación, prueba o externo. |
+| Desbalance de clases | Frecuencias muy distintas entre las clases. |
+| Entropía normalizada | Medida entre 0 y 1; más cerca de 1 indica mayor equilibrio. |
+| Impureza de Gini | Medida entre 0 y 1; más cerca de 1 indica mayor desbalance. |
+| Divergencia de Jensen-Shannon | Medida entre 0 y 1 de la diferencia entre dos distribuciones. |
+| Brillo medio | Promedio de los niveles de gris de la imagen. |
+| Contraste | Desviación estándar de los niveles de gris. |
+| Nitidez | Varianza del laplaciano; valores altos indican más detalle. |
+| Intervalo de confianza por remuestreo | Rango estimado mediante remuestreo repetido de los datos. |
+| p-valor | Probabilidad de observar el resultado si la hipótesis nula fuera cierta. |
+| Formato YOLO | Formato de anotación con clase y caja normalizada. |
+
+**Nomenclatura de condiciones:**
+
+| Código | Significado |
+| --- | --- |
+| L30 | luz rasante a 30° |
+| L45 | luz rasante a 45° |
+| Ldif | luz difusa |
+| O0 | orientación 0° |
+| O15 | orientación 15° |
+| Sflat | soporte liso |
+| Swrinkle | soporte con arrugas |
+
+## 12. Anexo: tabla completa de clases
+
+| identificador_clase | etiqueta_braille | puntos | frecuencia | porcentaje | frecuencia_angelina | frecuencia_dsbi | frecuencia_libros | frecuencia_subidas | frecuencia_manuscritas | frecuencia_recto |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0 | 1 | 1 | 8724 | 6.168 | 7884 | 840 | 5340 | 1656 | 888 | 840 |
 | 1 | 2 | 2 | 2556 | 1.807 | 1956 | 600 | 1608 | 264 | 84 | 600 |

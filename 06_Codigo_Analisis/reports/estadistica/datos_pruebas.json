@@ -1,91 +1,91 @@
 {
-  "brightness_friedman_lighting": {
+  "brillo_friedman_iluminacion": {
     "n": 160,
-    "statistic": 314.1125000000002,
-    "p_value": 6.184965430552041e-69
+    "estadistico": 314.1125000000002,
+    "p_valor": 6.184965430552041e-69
   },
-  "brightness_wilcoxon_orientation": {
+  "brillo_wilcoxon_orientacion": {
     "n": 240,
-    "statistic": 0.0,
-    "p_value": 4.015256434384509e-41,
-    "mean_a": 162.31558237075805,
-    "mean_b": 168.92138742208482
+    "estadistico": 0.0,
+    "p_valor": 4.015256434384509e-41,
+    "media_a": 162.31558237075805,
+    "media_b": 168.92138742208482
   },
-  "brightness_wilcoxon_support": {
+  "brillo_wilcoxon_soporte": {
     "n": 240,
-    "statistic": 0.0,
-    "p_value": 4.015256434384509e-41,
-    "mean_a": 168.83246223926545,
-    "mean_b": 162.40450755357742
+    "estadistico": 0.0,
+    "p_valor": 4.015256434384509e-41,
+    "media_a": 168.83246223926545,
+    "media_b": 162.40450755357742
   },
-  "contrast_friedman_lighting": {
+  "contraste_friedman_iluminacion": {
     "n": 160,
-    "statistic": 78.46250000000009,
-    "p_value": 9.16399000484463e-18
+    "estadistico": 78.46250000000009,
+    "p_valor": 9.16399000484463e-18
   },
-  "contrast_wilcoxon_orientation": {
+  "contraste_wilcoxon_orientacion": {
     "n": 240,
-    "statistic": 77.0,
-    "p_value": 1.0520483511477609e-40,
-    "mean_a": 45.70861745426164,
-    "mean_b": 48.53359928234899
+    "estadistico": 77.0,
+    "p_valor": 1.0520483511477609e-40,
+    "media_a": 45.70861745426164,
+    "media_b": 48.53359928234899
   },
-  "contrast_wilcoxon_support": {
+  "contraste_wilcoxon_soporte": {
     "n": 240,
-    "statistic": 1.0,
-    "p_value": 4.065932881517562e-41,
-    "mean_a": 47.90960058789719,
-    "mean_b": 46.33261614871344
+    "estadistico": 1.0,
+    "p_valor": 4.065932881517562e-41,
+    "media_a": 47.90960058789719,
+    "media_b": 46.33261614871344
   },
-  "sharpness_friedman_lighting": {
+  "nitidez_friedman_iluminacion": {
     "n": 160,
-    "statistic": 260.0,
-    "p_value": 3.481106839904301e-57
+    "estadistico": 260.0,
+    "p_valor": 3.481106839904301e-57
   },
-  "sharpness_wilcoxon_orientation": {
+  "nitidez_wilcoxon_orientacion": {
     "n": 240,
-    "statistic": 1862.0,
-    "p_value": 1.2605772352719762e-31,
-    "mean_a": 75.68404985206364,
-    "mean_b": 55.459420150915335
+    "estadistico": 1862.0,
+    "p_valor": 1.2605772352719762e-31,
+    "media_a": 75.68404985206364,
+    "media_b": 55.459420150915335
   },
-  "sharpness_wilcoxon_support": {
+  "nitidez_wilcoxon_soporte": {
     "n": 240,
-    "statistic": 0.0,
-    "p_value": 4.015256434384509e-41,
-    "mean_a": 86.69692553550863,
-    "mean_b": 44.446544467470325
+    "estadistico": 0.0,
+    "p_valor": 4.015256434384509e-41,
+    "media_a": 86.69692553550863,
+    "media_b": 44.446544467470325
   },
-  "box_area_mean_friedman_lighting": {
+  "area_caja_media_friedman_iluminacion": {
     "n": 160,
-    "statistic": 1.2250000000003638,
-    "p_value": 0.5419941884590884
+    "estadistico": 1.2250000000003638,
+    "p_valor": 0.5419941884590884
   },
-  "box_area_mean_wilcoxon_orientation": {
+  "area_caja_media_wilcoxon_orientacion": {
     "n": 240,
-    "statistic": 0.0,
-    "p_value": 4.0089791954770413e-41,
-    "mean_a": 390.50078564170326,
-    "mean_b": 349.9973336271457
+    "estadistico": 0.0,
+    "p_valor": 4.0089791954770413e-41,
+    "media_a": 390.50078564170326,
+    "media_b": 349.9973336271457
   },
-  "box_area_mean_wilcoxon_support": {
+  "area_caja_media_wilcoxon_soporte": {
     "n": 240,
-    "statistic": 0.0,
-    "p_value": 4.015256434384509e-41,
-    "mean_a": 359.02736586014277,
-    "mean_b": 381.4707534087062
+    "estadistico": 0.0,
+    "p_valor": 4.015256434384509e-41,
+    "media_a": 359.02736586014277,
+    "media_b": 381.4707534087062
   },
-  "jensen_shannon_angelina_dsbi": 0.6021327614304848,
-  "cajas_por_pagina_bootstrap_ci95": [
+  "divergencia_jensen_shannon_angelina_dsbi": 0.6021327614304848,
+  "cajas_por_pagina_intervalo_confianza_95": [
     251.849375,
     338.251875
   ],
   "desbalance": {
     "clases_presentes": 63,
     "clases_ausentes": 0,
-    "min": 96.0,
-    "max": 8724.0,
-    "ratio_max_min": 90.875,
+    "minimo": 96.0,
+    "maximo": 8724.0,
+    "razon_maximo_minimo": 90.875,
     "coeficiente_variacion": 0.9471642493161867,
     "entropia_normalizada": 0.9032338744414725,
     "gini_impureza": 0.9698869822986873,

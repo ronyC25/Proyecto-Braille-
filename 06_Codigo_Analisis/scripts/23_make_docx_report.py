@@ -21,6 +21,44 @@ STATS_DIR = ROOT / "reports" / "estadistica"
 FIGURES_DIR = ROOT / "reports" / "figuras"
 OUTPUT = STATS_DIR / "REPORTE_DATOS.docx"
 
+HEADER_NAMES = {
+    "fuente": "Fuente",
+    "paginas": "Páginas",
+    "imagenes": "Imágenes",
+    "cajas": "Cajas",
+    "clases": "Clases",
+    "cajas_por_pagina": "Cajas por página",
+    "subconjunto": "Subconjunto",
+    "etiqueta_braille": "Etiqueta Braille",
+    "puntos": "Puntos",
+    "frecuencia": "Frecuencia",
+    "porcentaje": "Porcentaje",
+    "frecuencia_angelina": "Frecuencia Angelina",
+    "frecuencia_dsbi": "Frecuencia DSBI",
+    "frecuencia_libros": "Frecuencia libros",
+    "frecuencia_subidas": "Frecuencia subidas",
+    "frecuencia_manuscritas": "Frecuencia manuscritas",
+    "frecuencia_recto": "Frecuencia recto",
+    "condicion": "Condición",
+    "brillo_medio": "Brillo medio",
+    "brillo_desviacion": "Brillo (desviación)",
+    "contraste_medio": "Contraste medio",
+    "contraste_desviacion": "Contraste (desviación)",
+    "nitidez_media": "Nitidez media",
+    "nitidez_desviacion": "Nitidez (desviación)",
+    "area_caja_media": "Área de caja media",
+    "area_caja_desviacion": "Área de caja (desviación)",
+    "prueba": "Prueba",
+    "estadistico": "Estadístico",
+    "p_valor": "p-valor",
+    "metrica": "Métrica",
+    "valor": "Valor",
+    "pliegue": "Pliegue",
+    "particion": "Partición",
+    "cobertura": "Cobertura",
+    "clases_faltantes": "Clases faltantes",
+    "identificador_clase": "Identificador de clase",
+}
 TABLE_COUNTER = 0
 FIGURE_COUNTER = 0
 
@@ -41,6 +79,13 @@ def _repeat_header(table):
     tr_pr.append(tbl_header)
 
 
+def _cant_split(table):
+    for row in table.rows:
+        tr_pr = row._tr.get_or_add_trPr()
+        cant_split = OxmlElement("w:cantSplit")
+        tr_pr.append(cant_split)
+
+
 def _format_value(value, column):
     if pd.isna(value):
         return ""
@@ -56,6 +101,8 @@ def _format_value(value, column):
 def add_caption(doc, text, bold=False, italic=False, size=9):
     paragraph = doc.add_paragraph()
     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    paragraph.paragraph_format.space_after = Pt(2)
+    paragraph.paragraph_format.keep_with_next = True
     run = paragraph.add_run(text)
     run.bold = bold
     run.italic = italic
@@ -64,7 +111,7 @@ def add_caption(doc, text, bold=False, italic=False, size=9):
     return paragraph
 
 
-def add_table(doc, frame, caption, font_size=9, landscape=False):
+def add_table(doc, frame, caption, font_size=9):
     global TABLE_COUNTER
     TABLE_COUNTER += 1
     add_caption(doc, f"Tabla {TABLE_COUNTER}. {caption}", bold=True, size=9)
@@ -74,7 +121,7 @@ def add_table(doc, frame, caption, font_size=9, landscape=False):
     table.autofit = True
     header = table.rows[0].cells
     for index, column in enumerate(frame.columns):
-        header[index].text = str(column)
+        header[index].text = HEADER_NAMES.get(str(column), str(column))
         _set_cell_shading(header[index], "D9E2F3")
     for _, row in frame.iterrows():
         cells = table.add_row().cells
@@ -88,7 +135,7 @@ def add_table(doc, frame, caption, font_size=9, landscape=False):
                     run.font.name = "Times New Roman"
                     run.font.size = Pt(font_size)
     _repeat_header(table)
-    doc.add_paragraph()
+    _cant_split(table)
     return table
 
 
@@ -101,15 +148,16 @@ def add_figure(doc, filename, caption, width_cm=16):
     FIGURE_COUNTER += 1
     paragraph = doc.add_paragraph()
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    paragraph.paragraph_format.keep_with_next = True
     run = paragraph.add_run()
     run.add_picture(str(path), width=Cm(width_cm))
     caption_paragraph = doc.add_paragraph()
     caption_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    caption_paragraph.paragraph_format.space_after = Pt(6)
     run = caption_paragraph.add_run(f"Figura {FIGURE_COUNTER}. {caption}")
     run.italic = True
     run.font.size = Pt(9)
     run.font.name = "Times New Roman"
-    doc.add_paragraph()
 
 
 def add_field(paragraph, field):
@@ -133,7 +181,7 @@ def add_toc(doc):
     fld_char.set(qn("w:fldCharType"), "begin")
     instr_text = OxmlElement("w:instrText")
     instr_text.set(qn("xml:space"), "preserve")
-    instr_text.text = 'TOC \\o "1-2" \\h \\z \\u'
+    instr_text.text = 'TOC \\o "1-1" \\h \\z \\u'
     fld_char2 = OxmlElement("w:fldChar")
     fld_char2.set(qn("w:fldCharType"), "separate")
     text = OxmlElement("w:t")
@@ -193,10 +241,10 @@ def new_section(doc, landscape):
     return section
 
 
-def add_heading(doc, text, level=1, page_break=False):
-    if page_break:
-        doc.add_page_break()
-    doc.add_heading(text, level=level)
+def add_heading(doc, text, level=1):
+    heading = doc.add_heading(text, level=level)
+    heading.paragraph_format.keep_with_next = True
+    return heading
 
 
 def main():
@@ -222,30 +270,78 @@ def main():
     n_cajas = int(resumen_dict["cajas"])
     n_clases = int(resumen_dict["clases"])
     desbalance = pruebas["desbalance"]
-    top15 = clases.sort_values("count", ascending=False).head(15)
-    fold_table = folds.copy()
-    fold_table["split"] = pd.Categorical(
-        fold_table["split"], categories=["train", "val", "test", "external"], ordered=True
+    top15 = clases.sort_values("frecuencia", ascending=False).head(15)
+    least15 = clases.sort_values("frecuencia", ascending=True).head(15)
+    fold_table = folds.fillna("").copy()
+    fold_table["particion"] = pd.Categorical(
+        fold_table["particion"],
+        categories=["entrenamiento", "validacion", "prueba", "externo"],
+        ordered=True,
     )
-    fold_table = fold_table.sort_values(["experiment_fold", "split"])
+    fold_table = fold_table.sort_values(["pliegue", "particion"])
 
     test_rows = []
     for name, result in pruebas.items():
-        if isinstance(result, dict) and "p_value" in result and "statistic" in result:
+        if isinstance(result, dict) and "p_valor" in result and "estadistico" in result:
             test_rows.append(
                 {
                     "prueba": name,
                     "n": result.get("n"),
-                    "estadistico": result.get("statistic"),
-                    "p_valor": result.get("p_value"),
+                    "estadistico": result.get("estadistico"),
+                    "p_valor": result.get("p_valor"),
                 }
             )
     tests = pd.DataFrame(test_rows)
     other_rows = [
-        {"metrica": "jensen_shannon_angelina_dsbi", "valor": pruebas["jensen_shannon_angelina_dsbi"]},
-        {"metrica": "cajas_por_pagina_bootstrap_ci95", "valor": str(pruebas["cajas_por_pagina_bootstrap_ci95"])},
+        {
+            "metrica": "divergencia_jensen_shannon_angelina_dsbi",
+            "valor": pruebas["divergencia_jensen_shannon_angelina_dsbi"],
+        },
+        {
+            "metrica": "cajas_por_pagina_intervalo_confianza_95",
+            "valor": str(pruebas["cajas_por_pagina_intervalo_confianza_95"]),
+        },
     ] + [{"metrica": key, "valor": value} for key, value in desbalance.items()]
     other = pd.DataFrame(other_rows)
+
+    glossary = pd.DataFrame(
+        [
+            ("OBR", "Reconocimiento óptico de Braille: conversión de una imagen de texto en relieve a texto digital."),
+            ("CNN", "Red neuronal convolucional: modelo de aprendizaje profundo especializado en imágenes."),
+            ("Braille Grado 1", "Escritura táctil en la que cada carácter se representa por una celda de seis puntos, sin contracciones."),
+            ("Celda Braille", "Unidad de 2 columnas por 3 filas que representa un carácter o signo."),
+            ("Punto Braille", "Cada uno de los seis relieves posibles dentro de una celda, numerados del 1 al 6."),
+            ("Etiqueta Braille", "Número entero de 1 a 63 que codifica los puntos presentes en una celda."),
+            ("Caja delimitadora", "Rectángulo que encierra una celda Braille en la imagen."),
+            ("Anotación", "Archivo que indica las cajas y la clase de cada celda de una imagen."),
+            ("Corpus derivado", "Conjunto de 40 páginas × 12 condiciones generado a partir de Angelina y DSBI."),
+            ("Pliegue", "Cada una de las particiones de la validación cruzada."),
+            ("Partición", "Conjunto de entrenamiento, validación, prueba o externo."),
+            ("Desbalance de clases", "Frecuencias muy distintas entre las clases."),
+            ("Entropía normalizada", "Medida entre 0 y 1; más cerca de 1 indica mayor equilibrio."),
+            ("Impureza de Gini", "Medida entre 0 y 1; más cerca de 1 indica mayor desbalance."),
+            ("Divergencia de Jensen-Shannon", "Medida entre 0 y 1 de la diferencia entre dos distribuciones."),
+            ("Brillo medio", "Promedio de los niveles de gris de la imagen."),
+            ("Contraste", "Desviación estándar de los niveles de gris."),
+            ("Nitidez", "Varianza del laplaciano; valores altos indican más detalle."),
+            ("Intervalo de confianza por remuestreo", "Rango estimado mediante remuestreo repetido de los datos."),
+            ("p-valor", "Probabilidad de observar el resultado si la hipótesis nula fuera cierta."),
+            ("Formato YOLO", "Formato de anotación con clase y caja normalizada."),
+        ],
+        columns=["Término", "Definición"],
+    )
+    nomenclature = pd.DataFrame(
+        [
+            ("L30", "luz rasante a 30°"),
+            ("L45", "luz rasante a 45°"),
+            ("Ldif", "luz difusa"),
+            ("O0", "orientación 0°"),
+            ("O15", "orientación 15°"),
+            ("Sflat", "soporte liso"),
+            ("Swrinkle", "soporte con arrugas"),
+        ],
+        columns=["Código", "Significado"],
+    )
 
     doc = Document()
     section = doc.sections[0]
@@ -280,7 +376,7 @@ def main():
     settings.append(update_fields)
 
     # Portada
-    for _ in range(5):
+    for _ in range(3):
         doc.add_paragraph()
     title = doc.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -313,7 +409,7 @@ def main():
         run.font.name = "Times New Roman"
         run.font.size = Pt(11)
 
-    # Índice
+    # Índice y resumen ejecutivo
     doc.add_page_break()
     content = doc.add_paragraph()
     run = content.add_run("Contenido")
@@ -321,15 +417,13 @@ def main():
     run.font.name = "Times New Roman"
     run.font.size = Pt(16)
     add_toc(doc)
-
-    # Resumen ejecutivo
-    add_heading(doc, "Resumen ejecutivo", level=1, page_break=True)
+    add_heading(doc, "Resumen ejecutivo", level=1)
     doc.add_paragraph(
         f"El corpus derivado contiene {n_imagenes} imágenes ({n_paginas} páginas × "
         f"{n_condiciones} condiciones), {n_cajas:,} cajas anotadas y {n_clases}/63 "
         "clases Braille cubiertas. Se construyó a partir de Angelina y DSBI +recto. "
         "El análisis se centra en composición, balance, calidad de imagen, área de "
-        "caja y cobertura por fold; no incluye entrenamiento de modelos."
+        "caja y cobertura por pliegue; no incluye entrenamiento de modelos."
     )
     key = pd.DataFrame(
         [
@@ -350,16 +444,20 @@ def main():
     add_table(doc, key, "Indicadores principales del corpus", font_size=9)
 
     # 1. Resumen del corpus
-    add_heading(doc, "1. Resumen del corpus", level=1, page_break=True)
+    add_heading(doc, "1. Resumen del corpus", level=1)
     doc.add_paragraph(
-        "La Tabla 2 presenta las métricas generales del corpus. Todas las imágenes "
-        "tienen resolución 1024×1024 y las anotaciones están en formato YOLO."
+        "La tabla siguiente presenta las métricas generales del corpus. Todas las "
+        "imágenes tienen resolución 1024×1024 y las anotaciones están en formato YOLO."
     )
-    add_table(doc, resumen.rename(columns={"metrica": "Métrica", "valor": "Valor"}),
-              "Resumen general del corpus", font_size=9)
+    add_table(
+        doc,
+        resumen.rename(columns={"metrica": "Métrica", "valor": "Valor"}),
+        "Resumen general del corpus",
+        font_size=9,
+    )
 
     # 2. Composición
-    add_heading(doc, "2. Composición por fuente y subconjunto", level=1, page_break=True)
+    add_heading(doc, "2. Composición por fuente y subconjunto", level=1)
     doc.add_paragraph(
         "Angelina aporta 30 páginas y 58 clases; DSBI +recto aporta 10 páginas y "
         "las 63 clases. La combinación de ambas fuentes cubre todo el espacio de "
@@ -367,123 +465,201 @@ def main():
     )
     add_table(doc, fuentes, "Composición por fuente", font_size=9)
     add_table(doc, subconjuntos, "Composición por subconjunto", font_size=9)
-    add_figure(doc, "datos_distribucion_fuente.png",
-               "Distribución de clases por fuente (Angelina vs. DSBI)", width_cm=16)
+    add_figure(
+        doc,
+        "datos_distribucion_fuente.png",
+        "Distribución de clases por fuente (Angelina vs. DSBI)",
+        width_cm=16,
+    )
 
     # 3. Distribución de clases
-    add_heading(doc, "3. Distribución de clases", level=1, page_break=True)
+    add_heading(doc, "3. Distribución de clases", level=1)
     doc.add_paragraph(
         f"Las 63 clases están presentes, pero su frecuencia es desigual. La clase "
-        f"más frecuente concentra {int(clases['count'].max()):,} cajas y la menos "
-        f"frecuente {int(clases[clases['count'] > 0]['count'].min()):,}. La Tabla 5 "
-        "muestra las 15 clases más frecuentes; el anexo contiene la tabla completa."
+        f"más frecuente concentra {int(clases['frecuencia'].max()):,} cajas y la "
+        f"menos frecuente {int(clases[clases['frecuencia'] > 0]['frecuencia'].min()):,}. "
+        "La tabla siguiente muestra las 15 clases más frecuentes; el anexo contiene "
+        "la tabla completa."
     )
-    add_table(doc, top15[["int_label", "dots", "count", "pct", "count_angelina", "count_dsbi"]],
-              "Top 15 clases por cantidad de cajas", font_size=9)
-    add_figure(doc, "datos_distribucion.png",
-               "Distribución de las 63 clases y porcentaje acumulado", width_cm=16)
+    add_table(
+        doc,
+        top15[
+            [
+                "etiqueta_braille",
+                "puntos",
+                "frecuencia",
+                "porcentaje",
+                "frecuencia_angelina",
+                "frecuencia_dsbi",
+            ]
+        ],
+        "15 clases más frecuentes",
+        font_size=9,
+    )
+    add_figure(
+        doc,
+        "datos_distribucion.png",
+        "Distribución de las 63 clases y porcentaje acumulado",
+        width_cm=16,
+    )
 
     # 4. Desbalance
-    add_heading(doc, "4. Desbalance de clases", level=1, page_break=True)
+    add_heading(doc, "4. Desbalance de clases", level=1)
     doc.add_paragraph(
         "El desbalance es alto: la razón entre la clase más y menos frecuente es "
-        f"{desbalance['ratio_max_min']:.1f}. Se recomienda augmentation selectiva y "
-        "class weights durante el entrenamiento."
+        f"{desbalance['razon_maximo_minimo']:.1f}. Se recomienda aumento de datos y "
+        "pesos por clase durante el entrenamiento. La figura siguiente compara todas "
+        "las clases y destaca las 15 menos frecuentes."
     )
-    add_table(doc, pd.DataFrame(list(desbalance.items()), columns=["Métrica", "Valor"]),
-              "Métricas de desbalance de clases", font_size=9)
+    add_table(
+        doc,
+        pd.DataFrame(list(desbalance.items()), columns=["Métrica", "Valor"]),
+        "Métricas de desbalance de clases",
+        font_size=9,
+    )
+    add_table(
+        doc,
+        least15[
+            [
+                "etiqueta_braille",
+                "puntos",
+                "frecuencia",
+                "porcentaje",
+                "frecuencia_angelina",
+                "frecuencia_dsbi",
+            ]
+        ],
+        "15 clases menos frecuentes",
+        font_size=9,
+    )
+    add_figure(
+        doc,
+        "datos_desbalance.png",
+        "Desbalance de clases: todas las clases y las 15 menos frecuentes",
+        width_cm=16,
+    )
 
     # 5. Cajas por página y condición
-    add_heading(doc, "5. Cajas por página y por condición", level=1, page_break=True)
+    new_section(doc, landscape=True)
+    add_heading(doc, "5. Cajas por página y por condición", level=1)
     doc.add_paragraph(
         f"Cada página contiene entre {int(resumen_dict['cajas_por_pagina_min'])} y "
         f"{int(resumen_dict['cajas_por_pagina_max'])} cajas; la mediana es "
         f"{resumen_dict['cajas_por_pagina_mediana']:.0f}."
     )
-    add_figure(doc, "datos_cajas_pagina.png",
-               "Distribución de cajas por página", width_cm=16)
-    doc.add_paragraph(
-        "La Tabla 7 resume las 12 condiciones. La iluminación no altera el área de "
-        "caja; la orientación y el soporte sí lo hacen."
+    add_figure(
+        doc,
+        "datos_cajas_pagina.png",
+        "Distribución de cajas por página",
+        width_cm=20,
     )
-    new_section(doc, landscape=True)
+    doc.add_paragraph(
+        "La tabla siguiente resume las 12 condiciones. La iluminación no altera el "
+        "área de caja; la orientación y el soporte sí lo hacen."
+    )
     add_table(doc, condiciones, "Resumen de las 12 condiciones", font_size=8)
-    add_figure(doc, "datos_area_caja.png",
-               "Área media de caja por condición", width_cm=24)
-    new_section(doc, landscape=False)
+    add_figure(
+        doc,
+        "datos_area_caja.png",
+        "Área media de caja por condición",
+        width_cm=24,
+    )
 
     # 6. Calidad de imagen
+    new_section(doc, landscape=False)
     add_heading(doc, "6. Calidad de imagen", level=1)
     doc.add_paragraph(
         "Las condiciones modifican significativamente el brillo, el contraste y la "
-        "nitidez (p < 0.001). La Figura 5 muestra la distribución por iluminación, "
-        "orientación y soporte."
+        "nitidez (p < 0.001). La figura siguiente muestra la distribución por "
+        "iluminación, orientación y soporte."
     )
-    add_figure(doc, "datos_calidad.png",
-               "Calidad de imagen por condición", width_cm=16)
+    add_figure(
+        doc,
+        "datos_calidad.png",
+        "Calidad de imagen por condición",
+        width_cm=16,
+    )
 
     # 7. Pruebas estadísticas
-    add_heading(doc, "7. Pruebas estadísticas", level=1, page_break=True)
+    add_heading(doc, "7. Pruebas estadísticas", level=1)
     doc.add_paragraph(
         "Se aplicaron pruebas de Friedman para la iluminación y Wilcoxon pareado "
         "para orientación y soporte. Los valores p se reportan en notación científica."
     )
     add_table(doc, tests, "Pruebas de Friedman y Wilcoxon", font_size=9)
-    add_table(doc, other, "Otras métricas: JSD, bootstrap y desbalance", font_size=9)
+    add_table(
+        doc,
+        other,
+        "Otras métricas: divergencia de Jensen-Shannon, remuestreo y desbalance",
+        font_size=9,
+    )
 
-    # 8. Cobertura por fold
-    add_heading(doc, "8. Cobertura por fold", level=1, page_break=True)
+    # 8. Cobertura por pliegue
+    new_section(doc, landscape=True)
+    add_heading(doc, "8. Cobertura por pliegue", level=1)
     doc.add_paragraph(
         "Los cinco conjuntos de entrenamiento cubren 63/63 clases. Validación, prueba "
         "y externo no cubren todas las clases, lo cual es esperado por su tamaño."
     )
-    add_figure(doc, "datos_cobertura_folds.png",
-               "Cobertura de clases por fold y split", width_cm=16)
-    new_section(doc, landscape=True)
-    add_table(doc, fold_table, "Cobertura y conteos por fold y split", font_size=8)
-    new_section(doc, landscape=False)
+    add_figure(
+        doc,
+        "datos_cobertura_folds.png",
+        "Cobertura de clases por pliegue y partición",
+        width_cm=20,
+    )
+    add_table(doc, fold_table, "Cobertura y conteos por pliegue y partición", font_size=8)
 
     # 9. Integridad
+    new_section(doc, landscape=False)
     add_heading(doc, "9. Integridad y duplicados", level=1)
     doc.add_paragraph(f"Grupos de imágenes duplicadas: {duplicados['n_duplicados']}.")
     doc.add_paragraph("Todas las imágenes tienen tamaño 1024×1024.")
     doc.add_paragraph(f"Clases cubiertas: {n_clases}/63.")
 
     # 10. Conclusiones
-    add_heading(doc, "10. Conclusiones del análisis de datos", level=1, page_break=True)
+    add_heading(doc, "10. Conclusiones del análisis de datos", level=1)
     conclusions = [
         "El corpus está balanceado por página y condición: 40 imágenes por condición y 12 imágenes por página.",
-        f"La distribución de clases es desigual: la clase más frecuente tiene {int(clases['count'].max()):,} cajas y la menos frecuente {int(clases[clases['count'] > 0]['count'].min()):,}.",
+        f"La distribución de clases es desigual: la clase más frecuente tiene {int(clases['frecuencia'].max()):,} cajas y la menos frecuente {int(clases[clases['frecuencia'] > 0]['frecuencia'].min()):,}.",
         "DSBI aporta 63/63 clases y Angelina 58/63; la combinación cubre el espacio completo.",
         "La orientación y el soporte modifican el área de caja; la iluminación no (p≈0.542).",
-        "La cobertura de entrenamiento es 63/63 en todos los folds; val/test/external no cubren todas las clases, algo esperado por su tamaño.",
-        "El desbalance es alto (ratio máximo/mínimo ≈ 90.9), por lo que se recomienda augmentation y class weights.",
+        "La cobertura de entrenamiento es 63/63 en todos los pliegues; validación, prueba y externo no cubren todas las clases, algo esperado por su tamaño.",
+        "El desbalance es alto (razón máximo/mínimo ≈ 90.9), por lo que se recomienda aumento de datos y pesos por clase.",
     ]
     for text in conclusions:
         paragraph = doc.add_paragraph(style="List Bullet")
         paragraph.add_run(text)
 
-    # 11. Anexo
-    new_section(doc, landscape=True)
-    add_heading(doc, "11. Anexo: tabla completa de clases", level=1)
+    # 11. Glosario
+    add_heading(doc, "11. Glosario de términos", level=1)
     doc.add_paragraph(
-        "La Tabla 11 contiene las 63 clases con su frecuencia total, por fuente y por subconjunto."
+        "La tabla siguiente define los términos técnicos usados en este reporte."
+    )
+    add_table(doc, glossary, "Glosario de términos", font_size=8.5)
+    doc.add_paragraph("Nomenclatura de condiciones:")
+    add_table(doc, nomenclature, "Nomenclatura de condiciones", font_size=9)
+
+    # 12. Anexo
+    new_section(doc, landscape=True)
+    add_heading(doc, "12. Anexo: tabla completa de clases", level=1)
+    doc.add_paragraph(
+        "La tabla siguiente contiene las 63 clases con su frecuencia total, por fuente y por subconjunto."
     )
     add_table(
         doc,
         clases[
             [
-                "class_id",
-                "int_label",
-                "dots",
-                "count",
-                "pct",
-                "count_angelina",
-                "count_dsbi",
-                "count_books",
-                "count_uploaded",
-                "count_handwritten",
-                "count_recto",
+                "identificador_clase",
+                "etiqueta_braille",
+                "puntos",
+                "frecuencia",
+                "porcentaje",
+                "frecuencia_angelina",
+                "frecuencia_dsbi",
+                "frecuencia_libros",
+                "frecuencia_subidas",
+                "frecuencia_manuscritas",
+                "frecuencia_recto",
             ]
         ],
         "Tabla completa de clases",

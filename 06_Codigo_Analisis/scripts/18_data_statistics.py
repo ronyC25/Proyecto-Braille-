@@ -25,6 +25,18 @@ from src.utils.paths import load_paths
 
 plt.rcParams["font.family"] = "DejaVu Sans"
 PIXELS = 1024 * 1024
+SUBSET_NAMES = {
+    "books": "libros",
+    "uploaded": "subidas",
+    "handwritten": "manuscritas",
+    "recto": "recto",
+}
+SPLIT_NAMES = {
+    "train": "entrenamiento",
+    "val": "validacion",
+    "test": "prueba",
+    "external": "externo",
+}
 
 
 def parse_labels(label_path):
@@ -77,7 +89,7 @@ def _friedman(frame, value, factor, levels, index_cols):
     if len(data) < 3:
         return None
     statistic, p_value = friedmanchisquare(*[data[level] for level in levels])
-    return {"n": int(len(data)), "statistic": float(statistic), "p_value": float(p_value)}
+    return {"n": int(len(data)), "estadistico": float(statistic), "p_valor": float(p_value)}
 
 
 def _wilcoxon(frame, value, factor, level_a, level_b, index_cols):
@@ -95,10 +107,10 @@ def _wilcoxon(frame, value, factor, level_a, level_b, index_cols):
         return None
     return {
         "n": int(len(data)),
-        "statistic": float(statistic),
-        "p_value": float(p_value),
-        "mean_a": float(data[level_a].mean()),
-        "mean_b": float(data[level_b].mean()),
+        "estadistico": float(statistic),
+        "p_valor": float(p_value),
+        "media_a": float(data[level_a].mean()),
+        "media_b": float(data[level_b].mean()),
     }
 
 
@@ -140,9 +152,9 @@ def _imbalance(counts):
     return {
         "clases_presentes": int((values > 0).sum()),
         "clases_ausentes": int((values == 0).sum()),
-        "min": float(values.min()),
-        "max": float(values.max()),
-        "ratio_max_min": float(values.max() / values.min()) if values.min() > 0 else None,
+        "minimo": float(values.min()),
+        "maximo": float(values.max()),
+        "razon_maximo_minimo": float(values.max() / values.min()) if values.min() > 0 else None,
         "coeficiente_variacion": float(values.std() / values.mean()) if values.mean() else None,
         "entropia_normalizada": entropy,
         "gini_impureza": gini,
@@ -157,15 +169,15 @@ def make_figures(frame, classes, folds, figures_dir):
     ensure_dir(figures_dir)
 
     fig, ax1 = plt.subplots(figsize=(14, 5))
-    ax1.bar(classes["int_label"], classes["count"], color="#1976D2", alpha=0.85)
+    ax1.bar(classes["etiqueta_braille"], classes["frecuencia"], color="#1976D2", alpha=0.85)
     ax1.set_xlabel("Etiqueta Braille (1–63)")
-    ax1.set_ylabel("Cajas")
-    ax1.set_title("Distribución de clases y acumulado")
+    ax1.set_ylabel("Frecuencia")
+    ax1.set_title("Distribución de clases y porcentaje acumulado")
     ax1.set_xticks(range(1, 64, 4))
     ax2 = ax1.twinx()
     ax2.plot(
-        classes["int_label"],
-        classes["pct"].cumsum(),
+        classes["etiqueta_braille"],
+        classes["porcentaje_acumulado"],
         color="#D32F2F",
         marker="o",
         markersize=2,
@@ -179,21 +191,21 @@ def make_figures(frame, classes, folds, figures_dir):
 
     fig, ax = plt.subplots(figsize=(14, 5))
     ax.bar(
-        classes["int_label"] - 0.2,
-        classes["count_angelina"],
+        classes["etiqueta_braille"] - 0.2,
+        classes["frecuencia_angelina"],
         width=0.4,
         label="Angelina",
         color="#1976D2",
     )
     ax.bar(
-        classes["int_label"] + 0.2,
-        classes["count_dsbi"],
+        classes["etiqueta_braille"] + 0.2,
+        classes["frecuencia_dsbi"],
         width=0.4,
         label="DSBI",
         color="#F57C00",
     )
     ax.set_xlabel("Etiqueta Braille (1–63)")
-    ax.set_ylabel("Cajas")
+    ax.set_ylabel("Frecuencia")
     ax.set_title("Distribución de clases por fuente")
     ax.set_xticks(range(1, 64, 4))
     ax.legend()
@@ -211,58 +223,97 @@ def make_figures(frame, classes, folds, figures_dir):
     fig.savefig(figures_dir / "datos_cajas_pagina.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
 
+    sorted_classes = classes.sort_values("frecuencia", ascending=False)
+    least_frequent = classes.sort_values("frecuencia", ascending=True).head(15)
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    axes[0].bar(
+        range(len(sorted_classes)),
+        sorted_classes["frecuencia"],
+        color="#1976D2",
+    )
+    axes[0].set_yscale("log")
+    axes[0].set_xlabel("Clases ordenadas de mayor a menor")
+    axes[0].set_ylabel("Frecuencia (escala logarítmica)")
+    axes[0].axhline(
+        sorted_classes["frecuencia"].mean(),
+        color="#D32F2F",
+        linestyle="--",
+        label="Media",
+    )
+    axes[0].axhline(
+        sorted_classes["frecuencia"].median(),
+        color="#F57C00",
+        linestyle="--",
+        label="Mediana",
+    )
+    axes[0].legend()
+    axes[0].set_title("Todas las clases")
+    axes[1].barh(
+        least_frequent["etiqueta_braille"].astype(str),
+        least_frequent["frecuencia"],
+        color="#F57C00",
+    )
+    axes[1].invert_yaxis()
+    axes[1].set_xlabel("Frecuencia")
+    axes[1].set_ylabel("Etiqueta Braille")
+    axes[1].set_title("15 clases menos frecuentes")
+    fig.suptitle("Desbalance de clases")
+    fig.tight_layout()
+    fig.savefig(figures_dir / "datos_desbalance.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
     fig, axes = plt.subplots(3, 3, figsize=(15, 12))
     factors = [
-        ("lighting", ["L30", "L45", "Ldif"]),
-        ("orientation", ["O0", "O15"]),
-        ("support", ["Sflat", "Swrinkle"]),
+        ("lighting", ["L30", "L45", "Ldif"], "Iluminación"),
+        ("orientation", ["O0", "O15"], "Orientación"),
+        ("support", ["Sflat", "Swrinkle"], "Soporte"),
     ]
     metrics = [
-        ("brightness", "Brillo medio"),
-        ("contrast", "Contraste (SD)"),
-        ("sharpness", "Nitidez (varianza Laplaciana)"),
+        ("brillo", "Brillo medio"),
+        ("contraste", "Contraste"),
+        ("nitidez", "Nitidez"),
     ]
     for row, (metric, title) in enumerate(metrics):
-        for col, (factor, levels) in enumerate(factors):
+        for col, (factor, levels, label) in enumerate(factors):
             ax = axes[row, col]
             ax.boxplot(
                 [frame[frame[factor] == level][metric].dropna() for level in levels],
                 tick_labels=levels,
             )
-            ax.set_title(f"{title} — {factor}")
+            ax.set_title(f"{title} — {label}")
     fig.suptitle("Calidad de imagen por condición")
     fig.tight_layout()
     fig.savefig(figures_dir / "datos_calidad.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
-    for ax, (factor, levels) in zip(axes, factors):
+    for ax, (factor, levels, label) in zip(axes, factors):
         ax.boxplot(
             [
-                frame[frame[factor] == level]["box_area_mean"].dropna()
+                frame[frame[factor] == level]["area_caja_media"].dropna()
                 for level in levels
             ],
             tick_labels=levels,
         )
-        ax.set_title(f"Área media de caja — {factor}")
+        ax.set_title(f"Área media de caja — {label}")
         ax.set_ylabel("Área (px²)")
     fig.tight_layout()
     fig.savefig(figures_dir / "datos_area_caja.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
 
     coverage = folds.pivot_table(
-        index="experiment_fold", columns="split", values="coverage", aggfunc="mean"
+        index="pliegue", columns="particion", values="cobertura", aggfunc="mean"
     )
     fig, ax = plt.subplots(figsize=(8, 4.5))
     image = ax.imshow(coverage.values, cmap="YlGn", vmin=0, vmax=63)
     ax.set_xticks(range(len(coverage.columns)))
     ax.set_xticklabels(coverage.columns)
     ax.set_yticks(range(len(coverage.index)))
-    ax.set_yticklabels([f"Fold {index}" for index in coverage.index])
+    ax.set_yticklabels([f"Pliegue {index}" for index in coverage.index])
     for row in range(coverage.shape[0]):
         for col in range(coverage.shape[1]):
             ax.text(col, row, f"{coverage.values[row, col]:.0f}", ha="center", va="center")
-    ax.set_title("Cobertura de clases por fold y split")
+    ax.set_title("Cobertura de clases por pliegue y partición")
     fig.colorbar(image, ax=ax, label="Clases")
     fig.tight_layout()
     fig.savefig(figures_dir / "datos_cobertura_folds.png", dpi=200, bbox_inches="tight")
@@ -314,36 +365,36 @@ def main():
             box_area_maxs.append(np.nan)
         n_boxes.append(len(areas))
 
-    frame["n_boxes_labels"] = n_boxes
-    frame["box_area_mean"] = box_area_means
-    frame["box_area_std"] = box_area_stds
-    frame["box_area_min"] = box_area_mins
-    frame["box_area_max"] = box_area_maxs
+    frame["cajas_etiquetas"] = n_boxes
+    frame["area_caja_media"] = box_area_means
+    frame["area_caja_desviacion"] = box_area_stds
+    frame["area_caja_minima"] = box_area_mins
+    frame["area_caja_maxima"] = box_area_maxs
 
     quality = frame["image_path"].map(image_quality)
-    frame["brightness"] = [value[0] for value in quality]
-    frame["contrast"] = [value[1] for value in quality]
-    frame["sharpness"] = [value[2] for value in quality]
+    frame["brillo"] = [value[0] for value in quality]
+    frame["contraste"] = [value[1] for value in quality]
+    frame["nitidez"] = [value[2] for value in quality]
 
     classes = pd.DataFrame(
         [
             {
-                "class_id": class_id,
-                "int_label": class_id + 1,
-                "dots": int_to_label123(class_id + 1),
-                "count": class_counts.get(class_id, 0),
-                "count_angelina": class_by_source["angelina"].get(class_id, 0),
-                "count_dsbi": class_by_source["dsbi"].get(class_id, 0),
-                "count_books": class_by_subset["books"].get(class_id, 0),
-                "count_uploaded": class_by_subset["uploaded"].get(class_id, 0),
-                "count_handwritten": class_by_subset["handwritten"].get(class_id, 0),
-                "count_recto": class_by_subset["recto"].get(class_id, 0),
+                "identificador_clase": class_id,
+                "etiqueta_braille": class_id + 1,
+                "puntos": int_to_label123(class_id + 1),
+                "frecuencia": class_counts.get(class_id, 0),
+                "frecuencia_angelina": class_by_source["angelina"].get(class_id, 0),
+                "frecuencia_dsbi": class_by_source["dsbi"].get(class_id, 0),
+                "frecuencia_libros": class_by_subset["books"].get(class_id, 0),
+                "frecuencia_subidas": class_by_subset["uploaded"].get(class_id, 0),
+                "frecuencia_manuscritas": class_by_subset["handwritten"].get(class_id, 0),
+                "frecuencia_recto": class_by_subset["recto"].get(class_id, 0),
             }
             for class_id in range(63)
         ]
     )
-    classes["pct"] = classes["count"] / classes["count"].sum() * 100
-    classes["pct_acumulado"] = classes["pct"].cumsum()
+    classes["porcentaje"] = classes["frecuencia"] / classes["frecuencia"].sum() * 100
+    classes["porcentaje_acumulado"] = classes["porcentaje"].cumsum()
     classes.to_csv(output_dir / "datos_clases.csv", index=False)
 
     boxes_per_page = frame.groupby("page_id")["n_boxes"].first()
@@ -352,19 +403,19 @@ def main():
         ("paginas", frame["page_id"].nunique()),
         ("condiciones", frame["condition_id"].nunique()),
         ("cajas", int(frame["n_boxes"].sum())),
-        ("clases", int((classes["count"] > 0).sum())),
+        ("clases", int((classes["frecuencia"] > 0).sum())),
         ("cajas_por_pagina_media", float(boxes_per_page.mean())),
         ("cajas_por_pagina_mediana", float(boxes_per_page.median())),
-        ("cajas_por_pagina_sd", float(boxes_per_page.std())),
+        ("cajas_por_pagina_desviacion", float(boxes_per_page.std())),
         ("cajas_por_pagina_min", int(boxes_per_page.min())),
         ("cajas_por_pagina_max", int(boxes_per_page.max())),
         ("cajas_por_imagen_media", float(frame["n_boxes"].mean())),
-        ("cajas_por_imagen_sd", float(frame["n_boxes"].std())),
-        ("area_caja_media_px2", float(frame["box_area_mean"].mean())),
-        ("area_caja_mediana_px2", float(frame["box_area_mean"].median())),
-        ("brillo_medio", float(frame["brightness"].mean())),
-        ("contraste_medio", float(frame["contrast"].mean())),
-        ("nitidez_media", float(frame["sharpness"].mean())),
+        ("cajas_por_imagen_desviacion", float(frame["n_boxes"].std())),
+        ("area_caja_media_px2", float(frame["area_caja_media"].mean())),
+        ("area_caja_mediana_px2", float(frame["area_caja_media"].median())),
+        ("brillo_medio", float(frame["brillo"].mean())),
+        ("contraste_medio", float(frame["contraste"].mean())),
+        ("nitidez_media", float(frame["nitidez"].mean())),
     ]
     pd.DataFrame(summary_rows, columns=["metrica", "valor"]).to_csv(
         output_dir / "datos_resumen.csv", index=False
@@ -380,6 +431,7 @@ def main():
             cajas_por_pagina=("n_boxes", lambda values: values.mean()),
         )
         .reset_index()
+        .rename(columns={"source": "fuente"})
     )
     sources.to_csv(output_dir / "datos_fuentes.csv", index=False)
 
@@ -394,23 +446,26 @@ def main():
         )
         .reset_index()
     )
+    subsets["subset"] = subsets["subset"].map(SUBSET_NAMES)
+    subsets = subsets.rename(columns={"subset": "subconjunto"})
     subsets.to_csv(output_dir / "datos_subconjuntos.csv", index=False)
 
     condition_summary = (
         frame.groupby("condition_id")
         .agg(
-            n_images=("image_path", "count"),
-            n_boxes=("n_boxes", "sum"),
-            brightness_mean=("brightness", "mean"),
-            brightness_sd=("brightness", "std"),
-            contrast_mean=("contrast", "mean"),
-            contrast_sd=("contrast", "std"),
-            sharpness_mean=("sharpness", "mean"),
-            sharpness_sd=("sharpness", "std"),
-            box_area_mean=("box_area_mean", "mean"),
-            box_area_sd=("box_area_mean", "std"),
+            imagenes=("image_path", "count"),
+            cajas=("n_boxes", "sum"),
+            brillo_medio=("brillo", "mean"),
+            brillo_desviacion=("brillo", "std"),
+            contraste_medio=("contraste", "mean"),
+            contraste_desviacion=("contraste", "std"),
+            nitidez_media=("nitidez", "mean"),
+            nitidez_desviacion=("nitidez", "std"),
+            area_caja_media=("area_caja_media", "mean"),
+            area_caja_desviacion=("area_caja_media", "std"),
         )
         .reset_index()
+        .rename(columns={"condition_id": "condicion"})
     )
     condition_summary.to_csv(output_dir / "datos_condiciones.csv", index=False)
     frame[
@@ -423,16 +478,29 @@ def main():
             "orientation",
             "support",
             "n_boxes",
-            "n_boxes_labels",
-            "box_area_mean",
-            "box_area_std",
-            "box_area_min",
-            "box_area_max",
-            "brightness",
-            "contrast",
-            "sharpness",
+            "cajas_etiquetas",
+            "area_caja_media",
+            "area_caja_desviacion",
+            "area_caja_minima",
+            "area_caja_maxima",
+            "brillo",
+            "contraste",
+            "nitidez",
         ]
-    ].to_csv(output_dir / "datos_calidad.csv", index=False)
+    ].rename(
+        columns={
+            "page_id": "pagina",
+            "source": "fuente",
+            "subset": "subconjunto",
+            "condition_id": "condicion",
+            "lighting": "iluminacion",
+            "orientation": "orientacion",
+            "support": "soporte",
+            "n_boxes": "cajas",
+        }
+    ).assign(subconjunto=lambda data: data["subconjunto"].map(SUBSET_NAMES)).to_csv(
+        output_dir / "datos_calidad.csv", index=False
+    )
 
     fold_rows = read_csv(paths["splits_dir"] / "derived_folds.csv")
     fold_records = []
@@ -448,30 +516,35 @@ def main():
             missing = sorted(set(range(63)) - classes_in_split)
             fold_records.append(
                 {
-                    "experiment_fold": experiment,
-                    "split": split,
-                    "pages": len(page_ids),
-                    "images": len(split_frame),
-                    "boxes": int(split_frame["n_boxes"].sum()),
-                    "classes": len(classes_in_split),
-                    "coverage": len(classes_in_split) / 63 * 100,
-                    "missing_classes": ",".join(str(value) for value in missing),
+                    "pliegue": experiment,
+                    "particion": SPLIT_NAMES[split],
+                    "paginas": len(page_ids),
+                    "imagenes": len(split_frame),
+                    "cajas": int(split_frame["n_boxes"].sum()),
+                    "clases": len(classes_in_split),
+                    "cobertura": len(classes_in_split) / 63 * 100,
+                    "clases_faltantes": ",".join(str(value) for value in missing),
                 }
             )
     folds = pd.DataFrame(fold_records)
     folds.to_csv(output_dir / "datos_folds.csv", index=False)
 
     tests = {}
-    for metric in ["brightness", "contrast", "sharpness", "box_area_mean"]:
-        tests[f"{metric}_friedman_lighting"] = _friedman(
+    for metric, prefix in [
+        ("brillo", "brillo"),
+        ("contraste", "contraste"),
+        ("nitidez", "nitidez"),
+        ("area_caja_media", "area_caja_media"),
+    ]:
+        tests[f"{prefix}_friedman_iluminacion"] = _friedman(
             frame, metric, "lighting", ["L30", "L45", "Ldif"],
             ["page_id", "orientation", "support"],
         )
-        tests[f"{metric}_wilcoxon_orientation"] = _wilcoxon(
+        tests[f"{prefix}_wilcoxon_orientacion"] = _wilcoxon(
             frame, metric, "orientation", "O0", "O15",
             ["page_id", "lighting", "support"],
         )
-        tests[f"{metric}_wilcoxon_support"] = _wilcoxon(
+        tests[f"{prefix}_wilcoxon_soporte"] = _wilcoxon(
             frame, metric, "support", "Sflat", "Swrinkle",
             ["page_id", "lighting", "orientation"],
         )
@@ -484,12 +557,14 @@ def main():
     )
     distribution_angelina /= distribution_angelina.sum()
     distribution_dsbi /= distribution_dsbi.sum()
-    tests["jensen_shannon_angelina_dsbi"] = float(
+    tests["divergencia_jensen_shannon_angelina_dsbi"] = float(
         jensenshannon(distribution_angelina, distribution_dsbi, base=2)
     )
     ci_low, ci_high = bootstrap_mean_ci(boxes_per_page.values, seed=42)
-    tests["cajas_por_pagina_bootstrap_ci95"] = [ci_low, ci_high]
-    tests["desbalance"] = _imbalance([class_counts.get(index, 0) for index in range(63)])
+    tests["cajas_por_pagina_intervalo_confianza_95"] = [ci_low, ci_high]
+    tests["desbalance"] = _imbalance(
+        [class_counts.get(index, 0) for index in range(63)]
+    )
     write_json(output_dir / "datos_pruebas.json", tests)
 
     duplicate_groups = defaultdict(list)
@@ -505,25 +580,26 @@ def main():
 
     make_figures(frame, classes, folds, figures_dir)
 
-    top_classes = classes.sort_values("count", ascending=False).head(15)
+    top_classes = classes.sort_values("frecuencia", ascending=False).head(15)
+    least_classes = classes.sort_values("frecuencia", ascending=True).head(15)
     tests_table = pd.DataFrame(
         [
             {
                 "prueba": name,
                 "n": result.get("n"),
-                "estadistico": result.get("statistic"),
-                "p_valor": result.get("p_value"),
+                "estadistico": result.get("estadistico"),
+                "p_valor": result.get("p_valor"),
             }
             for name, result in tests.items()
-            if isinstance(result, dict) and "p_value" in result and "statistic" in result
+            if isinstance(result, dict) and "p_valor" in result and "estadistico" in result
         ]
     )
     other_table = pd.DataFrame(
         [
-            {"metrica": "jensen_shannon_angelina_dsbi", "valor": tests["jensen_shannon_angelina_dsbi"]},
+            {"metrica": "divergencia_jensen_shannon_angelina_dsbi", "valor": tests["divergencia_jensen_shannon_angelina_dsbi"]},
             {
-                "metrica": "cajas_por_pagina_bootstrap_ci95",
-                "valor": str(tests["cajas_por_pagina_bootstrap_ci95"]),
+                "metrica": "cajas_por_pagina_intervalo_confianza_95",
+                "valor": str(tests["cajas_por_pagina_intervalo_confianza_95"]),
             },
         ]
         + [
@@ -532,10 +608,51 @@ def main():
         ]
     )
     fold_table = folds.copy()
-    fold_table["split"] = pd.Categorical(
-        fold_table["split"], categories=["train", "val", "test", "external"], ordered=True
+    fold_table["particion"] = pd.Categorical(
+        fold_table["particion"],
+        categories=["entrenamiento", "validacion", "prueba", "externo"],
+        ordered=True,
     )
-    fold_table = fold_table.sort_values(["experiment_fold", "split"])
+    fold_table = fold_table.sort_values(["pliegue", "particion"])
+
+    glossary = pd.DataFrame(
+        [
+            ("OBR", "Reconocimiento óptico de Braille: conversión de una imagen de texto en relieve a texto digital."),
+            ("CNN", "Red neuronal convolucional: modelo de aprendizaje profundo especializado en imágenes."),
+            ("Braille Grado 1", "Escritura táctil en la que cada carácter se representa por una celda de seis puntos, sin contracciones."),
+            ("Celda Braille", "Unidad de 2 columnas por 3 filas que representa un carácter o signo."),
+            ("Punto Braille", "Cada uno de los seis relieves posibles dentro de una celda, numerados del 1 al 6."),
+            ("Etiqueta Braille", "Número entero de 1 a 63 que codifica los puntos presentes en una celda."),
+            ("Caja delimitadora", "Rectángulo que encierra una celda Braille en la imagen."),
+            ("Anotación", "Archivo que indica las cajas y la clase de cada celda de una imagen."),
+            ("Corpus derivado", "Conjunto de 40 páginas × 12 condiciones generado a partir de Angelina y DSBI."),
+            ("Pliegue", "Cada una de las particiones de la validación cruzada."),
+            ("Partición", "Conjunto de entrenamiento, validación, prueba o externo."),
+            ("Desbalance de clases", "Frecuencias muy distintas entre las clases."),
+            ("Entropía normalizada", "Medida entre 0 y 1; más cerca de 1 indica mayor equilibrio."),
+            ("Impureza de Gini", "Medida entre 0 y 1; más cerca de 1 indica mayor desbalance."),
+            ("Divergencia de Jensen-Shannon", "Medida entre 0 y 1 de la diferencia entre dos distribuciones."),
+            ("Brillo medio", "Promedio de los niveles de gris de la imagen."),
+            ("Contraste", "Desviación estándar de los niveles de gris."),
+            ("Nitidez", "Varianza del laplaciano; valores altos indican más detalle."),
+            ("Intervalo de confianza por remuestreo", "Rango estimado mediante remuestreo repetido de los datos."),
+            ("p-valor", "Probabilidad de observar el resultado si la hipótesis nula fuera cierta."),
+            ("Formato YOLO", "Formato de anotación con clase y caja normalizada."),
+        ],
+        columns=["Término", "Definición"],
+    )
+    nomenclature = pd.DataFrame(
+        [
+            ("L30", "luz rasante a 30°"),
+            ("L45", "luz rasante a 45°"),
+            ("Ldif", "luz difusa"),
+            ("O0", "orientación 0°"),
+            ("O15", "orientación 15°"),
+            ("Sflat", "soporte liso"),
+            ("Swrinkle", "soporte con arrugas"),
+        ],
+        columns=["Código", "Significado"],
+    )
 
     report = []
     report.append("# Reporte detallado del análisis de datos\n")
@@ -553,15 +670,59 @@ def main():
     report.append(_md_table(subsets))
     report.append("\n![Distribución por fuente](../figuras/datos_distribucion_fuente.png)\n")
     report.append("## 3. Distribución de clases\n")
-    report.append(_md_table(classes[["class_id", "int_label", "dots", "count", "pct", "count_angelina", "count_dsbi"]].head(20)))
-    report.append("\n**Top 15 clases por cantidad de cajas:**\n")
-    report.append(_md_table(top_classes[["int_label", "dots", "count", "pct", "count_angelina", "count_dsbi"]]))
+    report.append(
+        _md_table(
+            classes[
+                [
+                    "identificador_clase",
+                    "etiqueta_braille",
+                    "puntos",
+                    "frecuencia",
+                    "porcentaje",
+                    "frecuencia_angelina",
+                    "frecuencia_dsbi",
+                ]
+            ].head(20)
+        )
+    )
+    report.append("\n**15 clases más frecuentes:**\n")
+    report.append(
+        _md_table(
+            top_classes[
+                [
+                    "etiqueta_braille",
+                    "puntos",
+                    "frecuencia",
+                    "porcentaje",
+                    "frecuencia_angelina",
+                    "frecuencia_dsbi",
+                ]
+            ]
+        )
+    )
     report.append("\n## 4. Desbalance de clases\n")
-    imbalance = tests["desbalance"]
-    report.append(_md_table(pd.DataFrame(list(imbalance.items()), columns=["Métrica", "Valor"])))
-    report.append("\n## 5. Cajas por página y por condición\n")
+    report.append(
+        _md_table(pd.DataFrame(list(tests["desbalance"].items()), columns=["Métrica", "Valor"]))
+    )
+    report.append("\n**15 clases menos frecuentes:**\n")
+    report.append(
+        _md_table(
+            least_classes[
+                [
+                    "etiqueta_braille",
+                    "puntos",
+                    "frecuencia",
+                    "porcentaje",
+                    "frecuencia_angelina",
+                    "frecuencia_dsbi",
+                ]
+            ]
+        )
+    )
+    report.append("\n![Desbalance de clases](../figuras/datos_desbalance.png)\n")
+    report.append("## 5. Cajas por página y por condición\n")
     report.append("\n![Cajas por página](../figuras/datos_cajas_pagina.png)\n")
-    report.append(_md_table(condition_summary.head(12)))
+    report.append(_md_table(condition_summary))
     report.append("\n![Área de caja por condición](../figuras/datos_area_caja.png)\n")
     report.append("## 6. Calidad de imagen\n")
     report.append("\n![Calidad de imagen](../figuras/datos_calidad.png)\n")
@@ -569,54 +730,52 @@ def main():
     report.append(_md_table(tests_table))
     report.append("\n**Otras métricas:**\n")
     report.append(_md_table(other_table))
-    report.append("\n## 8. Cobertura por fold\n")
+    report.append("\n## 8. Cobertura por pliegue\n")
     report.append(_md_table(fold_table))
-    report.append("\n![Cobertura por fold](../figuras/datos_cobertura_folds.png)\n")
+    report.append("\n![Cobertura por pliegue](../figuras/datos_cobertura_folds.png)\n")
     report.append("## 9. Integridad y duplicados\n")
     report.append(f"- Grupos de imágenes duplicadas: **{len(duplicates)}**")
-    report.append(f"- Imágenes con tamaño distinto de 1024×1024: **0** (validado en el corpus)")
-    report.append(f"- Clases cubiertas: **{int((classes['count'] > 0).sum())}/63**")
+    report.append("- Imágenes con tamaño distinto de 1024×1024: **0** (validado en el corpus)")
+    report.append(f"- Clases cubiertas: **{int((classes['frecuencia'] > 0).sum())}/63**")
     report.append("\n## 10. Conclusiones del análisis de datos\n")
     report.append(
         "- El corpus está balanceado por página y condición: 40 imágenes por condición y 12 imágenes por página."
     )
     report.append(
-        f"- La distribución de clases es desigual: la clase más frecuente tiene {int(classes['count'].max())} cajas y la menos frecuente {int(classes['count'][classes['count'] > 0].min())}."
-    )
-    report.append(
-        "- DSBI aporta clases raras que Angelina no contiene; esto justifica la combinación de fuentes."
-    )
-    report.append(
-        "- Las condiciones modifican significativamente brillo, contraste y nitidez, como se esperaba."
-    )
-    report.append(
-        "- La cobertura de entrenamiento es 63/63 en todos los folds; val/test/external no cubren todas las clases, lo cual es esperado por el tamaño de esos splits."
+        f"- La distribución de clases es desigual: la clase más frecuente tiene {int(classes['frecuencia'].max())} cajas y la menos frecuente {int(classes[classes['frecuencia'] > 0]['frecuencia'].min())}."
     )
     report.append(
         "- DSBI aporta 63/63 clases y Angelina 58/63; la combinación cubre el espacio completo."
     )
     report.append(
-        "- El desbalance es alto (ratio máximo/mínimo ≈ 90.9), por lo que se recomienda augmentation y class weights."
+        "- La orientación y el soporte modifican el área de caja; la iluminación no (p≈0.542)."
     )
     report.append(
-        "- La orientación y el soporte modifican el área de caja; la iluminación no (p≈0.542). Esto justifica evaluar robustez por orientación y soporte."
+        "- La cobertura de entrenamiento es 63/63 en todos los pliegues; validación, prueba y externo no cubren todas las clases, algo esperado por su tamaño."
     )
-    report.append("\n## 11. Anexo: tabla completa de clases\n")
+    report.append(
+        "- El desbalance es alto (razón máximo/mínimo ≈ 90.9), por lo que se recomienda aumento de datos y pesos por clase."
+    )
+    report.append("\n## 11. Glosario de términos\n")
+    report.append(_md_table(glossary))
+    report.append("\n**Nomenclatura de condiciones:**\n")
+    report.append(_md_table(nomenclature))
+    report.append("\n## 12. Anexo: tabla completa de clases\n")
     report.append(
         _md_table(
             classes[
                 [
-                    "class_id",
-                    "int_label",
-                    "dots",
-                    "count",
-                    "pct",
-                    "count_angelina",
-                    "count_dsbi",
-                    "count_books",
-                    "count_uploaded",
-                    "count_handwritten",
-                    "count_recto",
+                    "identificador_clase",
+                    "etiqueta_braille",
+                    "puntos",
+                    "frecuencia",
+                    "porcentaje",
+                    "frecuencia_angelina",
+                    "frecuencia_dsbi",
+                    "frecuencia_libros",
+                    "frecuencia_subidas",
+                    "frecuencia_manuscritas",
+                    "frecuencia_recto",
                 ]
             ]
         )
