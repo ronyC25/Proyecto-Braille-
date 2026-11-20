@@ -1,0 +1,37 @@
+\section{Sistema de variables y operacionalización}
+
+\subsection{Definición conceptual de las variables}
+La variable independiente es la configuración del detector: arquitectura
+(YOLOv8n o YOLOv11) y cuantización (FP32 o INT8). La variable dependiente es el
+desempeño del detector: precisión (incluida la robustez) y eficiencia. La
+oportunidad de la retroalimentación, la carga cognitiva
+\parencite{hart1988} y la usabilidad \parencite{brooke1996} son variables
+secundarias.
+
+\subsection{Operacionalización}
+La Tabla~\ref{tab:operacionalizacion} resume las dimensiones, los indicadores y
+la escala de medición.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Operacionalización de las variables}
+  \label{tab:operacionalizacion}
+  \small
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.0cm}@{}}
+    \toprule
+    \textbf{Variable} & \textbf{Dimensión} & \textbf{Indicadores} & \textbf{Escala} \\
+    \midrule
+    VI: Arquitectura de detección & Arquitectura & YOLOv8n; YOLOv11 & Nominal \\
+     & Cuantización & FP32; INT8 & Nominal \\
+    \midrule
+    VD: Desempeño del detector & Precisión (incl. robustez) & mAP@0.5; mAP@0.5:0.95; F1 macro; Kappa; AUC-ROC macro; CER; WER & Razón / intervalo \\
+     & Eficiencia & Latencia (ms); memoria (MB); tamaño (MB); $\Delta$mAP & Razón \\
+    \midrule
+    Secundaria: Retroalimentación docente & Oportunidad & Tiempo de revisión por página (min) & Razón \\
+    Secundaria: Carga cognitiva & Carga global & NASA-TLX (0--100) & Intervalo \\
+    Secundaria: Usabilidad & Usabilidad global & SUS (0--100) & Intervalo \\
+    \bottomrule
+  \end{tabularx}
+  \notaTabla{Elaboración propia a partir de la literatura revisada.}
+\end{table}

@@ -1,0 +1,10 @@
+source: derived
+path: "data/processed/derived_480"
+metadata: "data/processed/derived_480/metadata.csv"
+catalog: "data/splits/page_catalog.csv"
+folds: "data/splits/derived_folds.csv"
+images: 480
+pages: 40
+conditions: 12
+classes: 63
+size: 1024

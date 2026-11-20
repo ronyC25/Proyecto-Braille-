@@ -1,0 +1,41 @@
+\section{Planteamiento del problema}
+
+\subsection{Contexto internacional}
+El sistema Braille se estructura en celdas de dos columnas por tres filas. En
+visión por computadora, el reconocimiento óptico de Braille (OBR) pasó de la
+umbralización y la morfología matemática \parencite{antonacopoulos2004} al
+aprendizaje profundo supervisado \parencite{li2020}. Los detectores de una etapa
+localizan la celda completa y la clasifican en 63 categorías, lo que confiere
+invarianza ante rotaciones y deformaciones del papel
+\parencite{ovodov2021,sun2025}. Sin embargo, esos avances se formularon para
+documentos editoriales impresos en inglés, ruso o chino, o dependen de servicios
+en la nube.
+
+\subsection{Contexto nacional}
+En el Perú, la normativa de educación inclusiva reconoce el derecho de las
+personas con discapacidad a la Educación Básica Regular. Pese a ello, el Informe
+Defensorial N.º 183 reportó que el Programa Presupuestal 106 representaba apenas
+el 0.62\,\% del presupuesto educativo y que más del 88\,\% de las personas con
+discapacidad en edad escolar no estaba matriculada \parencite{defensoria2019}.
+Los Censos Nacionales 2017 registraron 3\,209\,261 personas con discapacidad
+(10.3\,\%), y la dificultad para ver fue la más frecuente (48.3\,\%;
+\citeauthor{inei2018}, \citeyear{inei2018}).
+
+\subsection{Realidad local}
+En Moquegua, y en particular en Ilo y Mariscal Nieto, los estudiantes con ceguera
+asisten a instituciones educativas regulares y reciben apoyo itinerante del CEBE
+``Corazón de Jesús''. Su herramienta cotidiana es la regleta y el punzón sobre
+cartulinas de 120 a 160 g/m\textsuperscript{2}, que producen relieves de
+aproximadamente 0.5 mm sin tinta ni contraste cromático. El docente de aula, que
+atiende además a entre 25 y 30 estudiantes videntes, no puede leer el cuaderno;
+la corrección queda retenida hasta la visita del especialista SAANEE/SAEE, que
+suele espaciarse semanas. La retroalimentación formativa, cuyo valor depende de
+la inmediatez \parencite{hattie2007}, queda anulada.
+
+\subsection{Justificación de la solución}
+Frente a este escenario, el proyecto diseña y evalúa una red neuronal
+convolucional ligera, basada en detectores de una etapa y cuantización INT8,
+capaz de reconocer celdas Braille Grado 1 manuscritas y ejecutarse sin conexión
+en teléfonos de gama media/baja. El aporte será un corpus anotado de Braille
+escolar manuscrito en español peruano y evidencia comparativa sobre el
+compromiso precisión--eficiencia--robustez.

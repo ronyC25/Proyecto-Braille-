@@ -1,0 +1,18 @@
+name: braille-obr
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - ultralytics>=8.4
+      - onnx>=1.16
+      - onnxruntime>=1.18
+      - opencv-python>=4.11
+      - numpy>=2.0
+      - pandas>=2.2
+      - scipy>=1.13
+      - scikit-learn>=1.5
+      - Pillow>=11.0
+      - PyYAML>=6.0
+      - pytest>=8.0

@@ -1,0 +1,9 @@
+model: yolov8n.pt
+data: data/processed/yolo_derived/folds/fold_0/data.yaml
+epochs: 100
+imgsz: 640
+batch: 16
+seed: 42
+project: outputs/runs
+name: yolov8n_int8
+quantize: true

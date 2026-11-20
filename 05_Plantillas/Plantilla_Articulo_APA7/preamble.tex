@@ -1,0 +1,75 @@
+% ============================================================
+% preamble.tex
+% Configuración APA 7 para artículo científico compacto (2 columnas).
+% Compilar con XeLaTeX (ver latexmkrc).
+% ============================================================
+
+% --- Fuente e idioma ---
+\usepackage{fontspec}
+\IfFontExistsTF{TeX Gyre Termes}
+  {\setmainfont{TeX Gyre Termes}}
+  {\IfFontExistsTF{Times New Roman}
+    {\setmainfont{Times New Roman}}
+    {\setmainfont{Latin Modern Roman}}}
+\usepackage[spanish,es-noshorthands]{babel}
+\addto\captionsspanish{%
+  \renewcommand{\tablename}{Tabla}%
+  \renewcommand{\refname}{Referencias}%
+}
+
+% --- Página y espaciado ---
+\usepackage[top=1.8cm,bottom=1.8cm,left=2cm,right=2cm]{geometry}
+\usepackage{setspace}
+\singlespacing
+\usepackage{ragged2e}
+\justifying
+\usepackage{multicol}
+
+% --- Títulos numerados ---
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\bfseries\fontsize{11}{13}\selectfont}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\bfseries\itshape\fontsize{10.4}{12.4}\selectfont}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{7pt}{2pt}
+\titlespacing*{\subsection}{0pt}{5pt}{1.5pt}
+
+% --- Encabezado y numeración ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+
+% --- Tablas y figuras ---
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup[table]{labelformat=simple,labelsep=newline,textfont=it,labelfont=bf,justification=raggedright,singlelinecheck=false,skip=2pt}
+\captionsetup[figure]{labelformat=simple,labelsep=newline,textfont=it,labelfont=bf,justification=raggedright,singlelinecheck=false,skip=2pt}
+
+% --- Listas y matemáticas ---
+\usepackage{enumitem}
+\setlist{itemsep=1pt,parsep=0pt,topsep=2pt,partopsep=0pt}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{microtype}
+
+% --- Hipervínculos ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+% --- Citas y referencias APA 7 ---
+\usepackage[autostyle]{csquotes}
+\usepackage[backend=biber,style=apa,language=spanish]{biblatex}
+\DeclareLanguageMapping{spanish}{spanish-apa}
+\DefineBibliographyStrings{spanish}{andothers={et al.}}
+\addbibresource{referencias.bib}
+
+% --- Utilidades ---
+\usepackage{etoolbox}
+\newcommand{\notaTabla}[1]{\par\vspace{2pt}{\fontsize{7.2}{8.6}\selectfont\textit{Nota.} #1\par}}
+\newcommand{\notaFigura}[1]{\par\vspace{2pt}{\fontsize{7.2}{8.6}\selectfont\textit{Nota.} #1\par}}
+\newcommand{\cita}[1]{\enquote{#1}}

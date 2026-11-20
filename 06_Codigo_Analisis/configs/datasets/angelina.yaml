@@ -1,0 +1,11 @@
+source: angelina
+root: "../../Semana 7/dataset/data 1/AngelinaDataset"
+subsets:
+  - books
+  - uploaded
+  - handwritten
+exclude:
+  - pics
+  - not_braille
+labels: csv
+classes: 63

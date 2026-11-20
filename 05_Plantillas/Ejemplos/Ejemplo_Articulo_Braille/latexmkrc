@@ -1,0 +1,5 @@
+# Forzar XeLaTeX: fontspec no funciona con pdfLaTeX
+$pdf_mode = 5;
+$dvi_mode = 0;
+$postscript_mode = 0;
+$pdflatex = 'xelatex -synctex=1 -interaction=nonstopmode %O %S';

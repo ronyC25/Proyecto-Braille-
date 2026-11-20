@@ -1,0 +1,45 @@
+% !TEX program = xelatex
+% ============================================================
+% PLANTILLA DE ARTÍCULO CIENTÍFICO — APA 7 (2 columnas)
+% Compilar con XeLaTeX + Biber (Overleaf lo hace automáticamente).
+% Edita los datos en config.tex y el contenido en secciones/.
+% ============================================================
+\documentclass[10pt,a4paper]{extarticle}
+
+\input{preamble}
+\input{config}
+
+\begin{document}
+\fontsize{10.4}{12.4}\selectfont
+
+% ---------- Título, autores y filiación ----------
+\begin{center}
+  {\fontsize{8.5}{10.5}\selectfont\bfseries ARTÍCULO CIENTÍFICO}\\[4pt]
+  {\fontsize{14}{16.5}\selectfont\bfseries \Titulo}\\[6pt]
+  {\fontsize{11}{13}\selectfont \AutorA\ifdefempty{\AutorB}{}{ y \AutorB}}\\[2pt]
+  {\fontsize{9.5}{11.5}\selectfont\itshape \Filiacion}
+\end{center}
+
+% ---------- Resumen y palabras clave ----------
+\vspace{2pt}
+{\fontsize{9.5}{11.5}\selectfont
+\noindent\textbf{Resumen}\par
+\noindent \Resumen\par
+\vspace{2pt}
+\noindent\textbf{\textit{Palabras clave:}} \PalabrasClave\par
+}
+\vspace{4pt}
+
+% ---------- Cuerpo a dos columnas ----------
+\begin{multicols}{2}
+\input{secciones/01_introduccion}
+\input{secciones/02_metodo}
+\input{secciones/03_resultados}
+\input{secciones/04_discusion}
+\input{secciones/05_conclusiones}
+\end{multicols}
+
+% ---------- Referencias ----------
+\printbibliography[title={Referencias}]
+
+\end{document}

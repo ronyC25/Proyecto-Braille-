@@ -1,0 +1,26 @@
+\section{Resultados esperados}
+
+Se espera que YOLOv11 en INT8 ofrezca el mejor compromiso: mayor mAP@0.5 y F1
+macro que YOLOv8n, ventaja que se conservaría en condiciones adversas, con menor
+latencia, memoria y tamaño. La cuantización INT8 debería reducir latencia y
+memoria con una degradación de mAP no superior al umbral que se fije en la
+corrida piloto. En la fase pedagógica se espera que la revisión asistida reduzca
+el tiempo por página y la carga mental.
+
+\begin{table}[H]
+  \centering
+  \caption{Resultados esperados por configuración}
+  \label{tab:resultados}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}lX@{}}
+    \toprule
+    \textbf{Configuración} & \textbf{Resultado esperado} \\
+    \midrule
+    YOLOv8n FP32 & Línea base de precisión y latencia \\
+    YOLOv8n INT8 & Menor latencia y memoria \\
+    YOLOv11 FP32 & Mayor precisión que YOLOv8n \\
+    YOLOv11 INT8 & Mejor compromiso precisión--eficiencia \\
+    \bottomrule
+  \end{tabularx}
+  \notaTabla{Elaboración propia.}
+\end{table}

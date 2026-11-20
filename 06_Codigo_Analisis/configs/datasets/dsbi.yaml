@@ -1,0 +1,10 @@
+source: dsbi
+root: "../../Semana 7/dataset/data 2/DSBI"
+subset: recto
+labels: txt_grid
+classes: 63
+exclude:
+  - figures
+  - verso
+  - "M+7-??.txt"
+  - "M+9-??.txt"

@@ -1,0 +1,30 @@
+\section{Objetivos e hipótesis}
+
+\subsection{Objetivo general}
+Evaluar el desempeño de configuraciones de una red neuronal convolucional ligera
+para el reconocimiento óptico de Braille Grado 1 en dispositivos móviles, con el
+fin de identificar la que ofrece el mejor compromiso entre precisión (incluida la
+robustez), eficiencia y oportunidad de la retroalimentación docente.
+
+\subsection{Objetivos específicos}
+\begin{enumerate}
+  \item Comparar la precisión y la robustez de las configuraciones evaluadas
+  mediante mAP@0.5, F1 macro, Kappa de Cohen y AUC-ROC macro.
+  \item Determinar el efecto de la cuantización INT8 sobre la latencia, la
+  memoria y la precisión del modelo.
+  \item Evaluar el efecto del sistema en el tiempo de revisión por página de los
+  docentes.
+\end{enumerate}
+
+\subsection{Hipótesis}
+La hipótesis general anticipa que YOLOv11 cuantizada a INT8 ofrece el mejor
+compromiso entre precisión y eficiencia, y reduce el tiempo de revisión docente.
+
+\begin{itemize}
+  \item \textbf{H1.} YOLOv11 supera a YOLOv8n en mAP@0.5 y F1 macro (Wilcoxon;
+  $p < .05$) y mantiene la ventaja en condiciones adversas.
+  \item \textbf{H2.} INT8 reduce la latencia y la memoria con una degradación de
+  mAP@0.5 no superior al umbral que se fije en la corrida piloto.
+  \item \textbf{H3.} El sistema reduce el tiempo de revisión por página respecto
+  del procedimiento habitual (Wilcoxon; $p < .05$).
+\end{itemize}

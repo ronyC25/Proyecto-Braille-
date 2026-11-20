@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Datos externos: no versionar
+data/raw/angelina/
+data/raw/dsbi/
+
+# Datos generados
+data/interim/
+data/processed/
+data/splits/page_catalog.csv
+data/splits/derived_folds.csv
+data/splits/fold_*/
+
+# Salidas
+outputs/
+reports/*.json
+*.pt
+*.onnx
+*.tflite

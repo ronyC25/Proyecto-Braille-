@@ -1,0 +1,38 @@
+\section{IntroducciÃ³n}
+
+\subsection{Planteamiento del problema}
+El Braille organiza el texto en celdas de dos columnas por tres filas. En visiÃ³n
+por computadora, el reconocimiento Ã³ptico de Braille (OBR) pasÃ³ de la
+umbralizaciÃ³n y la morfologÃ­a matemÃ¡tica \parencite{antonacopoulos2004} al
+aprendizaje profundo supervisado \parencite{li2020}. Los detectores recientes
+localizan la celda completa y la clasifican en 63 categorÃ­as, lo que confiere
+invarianza ante rotaciones y deformaciones del papel
+\parencite{ovodov2021,sun2025}. Sin embargo, se formularon para documentos
+editoriales impresos o dependen de servicios en la nube; el Braille escolar
+manuscrito con regleta y punzÃ³n ha recibido escasa atenciÃ³n.
+
+En el PerÃº, el Informe Defensorial N.Âº 183 reportÃ³ que el Programa Presupuestal
+106 representaba apenas el 0.62\,\% del presupuesto educativo y que mÃ¡s del
+88\,\% de las personas con discapacidad en edad escolar no estaba matriculada
+\parencite{defensoria2019}. En Moquegua, el docente de aula no puede leer el
+cuaderno en relieve y la correcciÃ³n queda retenida hasta la visita del
+especialista; la retroalimentaciÃ³n formativa, cuyo valor depende de la
+inmediatez \parencite{hattie2007}, queda anulada.
+
+\subsection{Antecedentes y vacÃ­o}
+La literatura se ordena en mÃ©todos clÃ¡sicos, segmentaciÃ³n semÃ¡ntica y detecciÃ³n
+de objetos de una etapa. \textcite{li2020} propusieron BraUNet; \textcite{ovodov2021}
+plantearon la detecciÃ³n sobre la celda completa; \textcite{sun2025} exploraron
+YOLOv11 en escenas naturales. Para el espaÃ±ol, \textcite{fuentes2026} presentaron
+una aplicaciÃ³n mÃ³vil con CNN, pero no evalÃºan Braille manuscrito escolar ni el
+compromiso precisiÃ³n--eficiencia en gama baja. Persisten tres vacÃ­os: el Braille
+escolar manuscrito, la ejecuciÃ³n sin conexiÃ³n y una evaluaciÃ³n integrada de
+precisiÃ³n, concordancia, eficiencia y efecto pedagÃ³gico.
+
+\subsection{Objetivos e hipÃ³tesis}
+El objetivo general es evaluar configuraciones de una CNN ligera para OBR en
+mÃ³vil e identificar la de mejor compromiso entre precisiÃ³n, eficiencia y
+oportunidad de la retroalimentaciÃ³n docente. Se plantean tres hipÃ³tesis:
+YOLOv11 supera a YOLOv8n en mAP@0.5 y F1 macro (H1); INT8 reduce latencia y
+memoria con una degradaciÃ³n acotada de mAP (H2); y el sistema reduce el tiempo de
+revisiÃ³n por pÃ¡gina (H3).

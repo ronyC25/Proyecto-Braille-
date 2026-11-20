@@ -1,0 +1,52 @@
+% !TEX program = xelatex
+% ============================================================
+% PLANTILLA DE PROYECTO DE INVESTIGACIÓN — APA 7
+% Compilar con XeLaTeX + Biber (Overleaf lo hace automáticamente).
+% Edita los datos en config.tex y el contenido en secciones/.
+% ============================================================
+\documentclass[12pt,a4paper]{article}
+
+\input{preamble}
+\input{config}
+
+\begin{document}
+
+% ---------- Portada ----------
+\PortadaAPA
+\setcounter{page}{2}
+
+% ---------- Resumen ----------
+\section*{Resumen}
+\addcontentsline{toc}{section}{Resumen}
+\Resumen
+
+\par\vspace{6pt}
+\noindent\textit{Palabras clave:} \PalabrasClave
+\clearpage
+
+% ---------- Índice (opcional) ----------
+\ifConIndice
+  \tableofcontents
+  \clearpage
+\fi
+
+% ---------- Cuerpo del proyecto ----------
+\input{secciones/01_planteamiento}
+\input{secciones/02_antecedentes}
+\input{secciones/03_marco_teorico}
+\input{secciones/04_formulacion_problema}
+\input{secciones/05_justificacion}
+\input{secciones/06_objetivos_hipotesis}
+\input{secciones/07_variables_operacionalizacion}
+\input{secciones/08_poblacion_muestra}
+\input{secciones/09_metodologia}
+\input{secciones/10_aspectos_eticos}
+\input{secciones/11_limitaciones}
+
+% ---------- Referencias ----------
+\printbibliography[title={Referencias},heading=bibintoc]
+
+% ---------- Apéndices ----------
+\input{secciones/12_apendices}
+
+\end{document}

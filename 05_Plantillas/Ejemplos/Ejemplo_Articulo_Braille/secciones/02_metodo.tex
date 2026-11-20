@@ -1,0 +1,26 @@
+\section{Método}
+
+\subsection{Diseño}
+Investigación aplicada, enfoque cuantitativo, nivel explicativo-comparativo.
+Diseño experimental comparativo para la fase técnica y cuasiexperimento de medidas
+repetidas para la fase pedagógica.
+
+\subsection{Corpus y muestra}
+Se conforma un corpus de 40 páginas manuscritas en Braille Grado 1 (35
+controladas y 5 espontáneas), capturadas bajo 12 combinaciones fotométricas, lo
+que produce 480 fotografías. La partición es por página y se aplica validación
+cruzada de cinco pliegues agrupada. La fase pedagógica prevé hasta 30 docentes de
+las UGEL Ilo y Mariscal Nieto.
+
+\subsection{Variables e instrumentos}
+La variable independiente es la configuración del detector (YOLOv8n o YOLOv11;
+FP32 o INT8). La variable dependiente es el desempeño: precisión (mAP@0.5, F1
+macro, Kappa, AUC-ROC, CER, WER) y eficiencia (latencia, memoria, tamaño). La
+oportunidad de la retroalimentación se mide con el tiempo de revisión por página;
+la carga cognitiva y la usabilidad con NASA-TLX \parencite{hart1988} y SUS
+\parencite{brooke1996}.
+
+\subsection{Procedimiento y análisis}
+Se aplican Wilcoxon, McNemar, bootstrap de 5000 remuestreos y un criterio de no
+inferioridad para H2. Se documentan versiones de software, hardware y semillas
+para asegurar la reproducibilidad.
